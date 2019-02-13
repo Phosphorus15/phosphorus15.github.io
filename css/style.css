@@ -254,6 +254,66 @@ code {
   max-width: 100%;
   border-radius: 4px;
 }
+iframe {
+  border: none;
+}
+.pullquote {
+  text-align: left;
+  width: 45%;
+  margin: 0;
+}
+.pullquote.left {
+  margin-left: 0.5em;
+  margin-right: 1em;
+}
+.pullquote.right {
+  margin-right: 0.5em;
+  margin-left: 1em;
+}
+.caption {
+  color: color-grey;
+  display: block;
+  font-size: 0.9em;
+  margin-top: 0.5em;
+  position: relative;
+  text-align: center;
+}
+blockquote {
+  font-family: font-serif;
+  font-size: 1.4em;
+  margin: line-height 20px;
+  text-align: center;
+}
+blockquote footer {
+  font-size: font-size;
+  margin: line-height 0;
+  font-family: font-sans;
+}
+blockquote footer cite:before {
+  content: "—";
+  padding: 0 0.5em;
+}
+table {
+  width: 100%;
+  border-collapse: collapse;
+  border-spacing: 0;
+}
+th {
+  font-weight: bold;
+  border-bottom: 3px solid #aaa;
+  padding-bottom: 0.5em;
+  background-color: #e5e5e5;
+}
+td {
+  border-bottom: 1px solid #aaa;
+  padding: 10px 0;
+}
+tr:nth-child(2n) {
+  background-color: #f5f5f5;
+}
+figure {
+  overflow: auto;
+}
 pre .comment,
 pre .template_comment,
 pre .diff .header,
