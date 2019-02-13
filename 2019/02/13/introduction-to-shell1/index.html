@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html>
+<head><meta name="generator" content="Hexo 3.8.0">
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+    <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport">
+    <meta name="keywords" content="hexo, autumn, phosphorus15, cs">
+    <title>
+        Phosphorus&#39; Blog
+    </title>
+    <!-- favicon -->
+    
+    <link rel="icon" href="https://github.githubassets.com/favicon.ico">
+    
+    <link rel="stylesheet" href="/css/style.css">
+
+    <!-- highlight -->
+    <link rel="stylesheet" href="https://cdn.bootcss.com/highlight.js/9.12.0/styles/github-gist.min.css">
+    <script src="//cdn.bootcss.com/highlight.js/9.2.0/highlight.min.js"></script>
+    <script>
+        hljs.initHighlightingOnLoad()
+    </script>
+    <script src="https://cdn.bootcss.com/jquery/3.3.1/jquery.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/frontendsophie/hexo-infinite-scroll@1.0.0/dist/hexo-infinite-scroll.min.css">
+    <script src="https://cdn.jsdelivr.net/gh/frontendsophie/hexo-infinite-scroll@1.0.0/dist/hexo-infinite-scroll.min.js"></script>
+    <script>
+        infiniteScroll()
+
+        // for mobile menu
+        $(function () {
+            $('.social-button').click(function () {
+                if ($('.social-links').hasClass('hide-links')) {
+                    $('.social-links').removeClass('hide-links')
+                } else {
+                    $('.social-links').addClass('hide-links')
+                }
+            })
+        })
+    </script>
+</head>
+
+    <body style="background: url(https://cdn.jsdelivr.net/gh/frontendsophie/hexo-theme-autumn@1.0.0/source/img/button-bg.png) #f3f3f3">
+        <div class="container">
+            <header class="header">
+    <h1 class="title">
+        <a href="/" class="logo">
+            Phosphorus&#39; Blog
+        </a>
+    </h1>
+    <h2 class="desc">
+        Learning, Discovering, Exploiting
+    </h2>
+
+    <nav class="links">
+        <button class="social-button">
+            menu
+        </button>
+        <ul class="social-links hide-links">
+            
+                <li>
+                    <a href="https://github.com/Phosphorus15">
+                        Github
+                    </a>
+                </li>
+                
+                <li>
+                    <a href="https://blog.csdn.net/wxx1237/">
+                        CSDN
+                    </a>
+                </li>
+                
+        </ul>
+    </nav>
+</header>
+                <main class="main">
+                    <article class="post">
+    
+    
+    
+    <h2 class="post-title">
+        Shell脚本快速入门
+    </h2>
+    <ul class="post-date">
+        <li>
+            2019-02-13
+        </li>
+        <li>
+            Phosphorus15
+        </li>
+    </ul>
+    <div class="post-content">
+        <p>作者：Phosphorus15</p>
+<hr>
+<p>​    <code>shell</code>脚本是每一个linux开发者所必备的技能，相比其它脚本语言，<code>shell</code>更加贴近linux本身，与bash高度整合，在不少应用中（尤其是涉及文本处理和IO的）有着更高的易用性和简洁性。</p>
+<p>​    阅读本文需要一定的基础，笔者在写作时，期望读者：</p>
+<ul>
+<li><p>有一定的linux使用经验</p>
+</li>
+<li><p>熟悉至少一门常规脚本语言/编程语言</p>
+</li>
+<li><p>知道<a href="https://blog.csdn.net/wangqianyilynn/article/details/75576815" target="_blank" rel="noopener">管道</a><strong>为何物</strong></p>
+</li>
+<li><p><del>不要读着读着就睡着了</del></p>
+<p>全文节奏较快，不会对细节作过多阐述（<del>因为作者也是个半吊子</del>），旨在让读者在短时间快速上手，如存在问题，欢迎指正交流。</p>
+<p>此文不是成稿，可能存在描述错误或者考虑不周的情况，内容也不是十分完备，希望读者多多包涵。</p>
+</li>
+</ul>
+<h2 id="变量与函数"><a href="#变量与函数" class="headerlink" title="变量与函数"></a>变量与函数</h2><h3 id="变量"><a href="#变量" class="headerlink" title="变量"></a>变量</h3><p>​    变量定义与赋值的标准形式是<code>标识符=值</code>，不需要单独声明，等号附近<strong>不能</strong>有空格，示例如下：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#!/bin/bash</span></span><br><span class="line"><span class="comment"># 用 `#` 符号开头的为单行注释，其后的内容不会被当成代码</span></span><br><span class="line"></span><br><span class="line">a=35 <span class="comment"># 将 a 赋值为 35</span></span><br><span class="line">name=<span class="string">"williams"</span></span><br><span class="line">_o=<span class="string">"o"</span></span><br><span class="line">_ld=<span class="string">'ld'</span></span><br><span class="line">_old=<span class="string">"<span class="variable">$_o</span><span class="variable">$_ld</span>"</span> <span class="comment"># 通过 `$` 来引用变量 （此处只能使用双引号）</span></span><br><span class="line"></span><br><span class="line"><span class="built_in">echo</span> <span class="variable">$name</span> is <span class="variable">$a</span> years <span class="variable">$_old</span> <span class="comment"># 输出</span></span><br><span class="line"></span><br><span class="line"><span class="built_in">unset</span> _o <span class="comment"># 删除变量（置空）</span></span><br></pre></td></tr></table></figure>
+<p>​    用<code>sh</code>命令运行脚本，获得输出</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">williams is 35 years old</span><br></pre></td></tr></table></figure>
+<h3 id="函数定义"><a href="#函数定义" class="headerlink" title="函数定义"></a>函数定义</h3><p>​    函数的定义方式如下</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="title">func1</span></span>() &#123;</span><br><span class="line">    <span class="built_in">echo</span> <span class="variable">$1</span> <span class="comment"># $1 代表函数的第一个参数</span></span><br><span class="line">    <span class="built_in">echo</span> <span class="variable">$#</span> <span class="comment"># $# 代表函数参数的数目</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="title">func2</span></span>() &#123;</span><br><span class="line">    <span class="built_in">return</span> $((<span class="variable">$1</span>+<span class="variable">$2</span>)) <span class="comment"># 返回第一个和第二个参数相加的值 （返回值必须为整型）</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">a=3</span><br><span class="line">func1 <span class="string">"oops"</span> 233 <span class="comment"># 调用函数</span></span><br><span class="line">func2 <span class="variable">$a</span> 2</span><br><span class="line"></span><br><span class="line"><span class="built_in">echo</span> $? <span class="comment"># 输出上一个命令/函数的返回值</span></span><br></pre></td></tr></table></figure>
+<p>​    运行脚本，获得输出</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">oops</span><br><span class="line">2</span><br><span class="line">6</span><br></pre></td></tr></table></figure>
+<h2 id="命令与IO"><a href="#命令与IO" class="headerlink" title="命令与IO"></a>命令与IO</h2><p>​    命令与IO是<code>shell</code>脚本中最重要的部分，在管道系统的帮助下，脚本可以很轻松地与系统命令和程序交互。</p>
+<p>​    以下是一个简单的例子：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">txts=`ls | egrep *.\.txt` <span class="comment"># 执行ls列出当前目录文件，并用egrep筛选.txt文件</span></span><br><span class="line"><span class="comment"># 还可以写作 txts=$(ls | egrep *.\.txt)</span></span><br><span class="line"><span class="built_in">echo</span> <span class="variable">$txts</span> <span class="comment"># 输出所有 txt 文件</span></span><br></pre></td></tr></table></figure>
+<p>​    此处的`符号与<code>Ruby</code>相近，用于执行命令并将<code>标准输出流</code>中的内容作为字符串值返回。</p>
+<p>​    因此，我们得到的变量<code>txts</code>就是在bash下执行命令时控制台上输出的内容。</p>
+<p>​    再比如，读取文件内容，或者获取当前用户，利用上述方法就能很容易地实现</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">text=`cat hello.txt` <span class="comment"># =&gt; text 被赋值为 hello.txt 里的文本</span></span><br><span class="line">username=`whoami` <span class="comment"># =&gt; username 被赋值为当前用户名</span></span><br><span class="line"><span class="built_in">echo</span> <span class="variable">$username</span> <span class="comment"># =&gt; 输出用户名，如 root</span></span><br></pre></td></tr></table></figure>
+<p>​    向文件输出同样也十分简单</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">text1=<span class="string">"hello,"</span></span><br><span class="line">text2=<span class="string">"world!"</span></span><br><span class="line"><span class="built_in">echo</span> -n <span class="variable">$text1</span> &gt; hello.txt <span class="comment"># 利用重定向输出 (n 表示不换行)</span></span><br><span class="line"><span class="built_in">echo</span> <span class="variable">$text2</span> &gt;&gt; hello.txt <span class="comment"># 追加文本到hello.txt中</span></span><br></pre></td></tr></table></figure>
+<p>​    运行上述脚本，目录下就会出现一个<code>hello.txt</code>，内有一行文字： <code>hello,world!</code></p>
+<p>​    使用<code>read</code>命令，可以从控制台中读入一个变量（类似于<code>Haskell</code>中的read）</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#!/bin/bash</span></span><br><span class="line"><span class="comment"># A + B Problem ~</span></span><br><span class="line"><span class="built_in">read</span> a</span><br><span class="line"><span class="built_in">read</span> b</span><br><span class="line">c=$((<span class="variable">$a</span>+<span class="variable">$b</span>))</span><br><span class="line"><span class="built_in">echo</span> <span class="variable">$a</span> + <span class="variable">$b</span> = <span class="variable">$c</span> <span class="comment"># =&gt; e.g. 1 + 3 = 4</span></span><br></pre></td></tr></table></figure>
+<p>​    值得注意的是，变量也可以参与`符号所包含的命令中，比如：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">text=<span class="string">"eureka!"</span></span><br><span class="line">text=`<span class="built_in">echo</span> <span class="variable">$text</span> | tr <span class="string">'a-z'</span> <span class="string">'A-Z'</span>` <span class="comment"># 用tr替换所有小写字母为大写字母</span></span><br><span class="line"><span class="built_in">echo</span> <span class="variable">$text</span></span><br></pre></td></tr></table></figure>
+<p>​    上述脚本输出为<code>EUREKA!</code></p>
+<h2 id="运算与流程控制"><a href="#运算与流程控制" class="headerlink" title="运算与流程控制"></a>运算与流程控制</h2><h3 id="运算与括号"><a href="#运算与括号" class="headerlink" title="运算与括号"></a>运算与括号</h3><p>​    提起<code>shell</code>脚本中的运算，就不得不介绍一下最常用的几种括号</p>
+<p>​    双小括号<code>(( ))</code>用于算术（整型）运算，同时也可以用于一些特殊功能</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">a=2</span><br><span class="line">b=$(( (<span class="variable">$a</span> + 1) / 2 )) <span class="comment"># =&gt; b = (2 + 1) / 2 = 1</span></span><br><span class="line">rd=$((RANDOM % 100)) <span class="comment"># =&gt; rd 为0~99的随机数</span></span><br><span class="line">c=$(( <span class="variable">$a</span> &gt; 1 )) <span class="comment"># =&gt; 判断 a &gt; 1 ，结果为 1 (true)</span></span><br><span class="line">d=$(expr <span class="variable">$a</span> + <span class="variable">$b</span>) <span class="comment"># =&gt; 等价于 $(($a + $b))</span></span><br></pre></td></tr></table></figure>
+<p>​    中括号<code>[ ]</code>和双中括号<code>[[ ]]</code>用于比较运算，其中<code>[ ]</code>实际上是对linux中<code>test</code>命令的隐式调用（<strong>务必注意</strong>：在shell的定义中，<code>true</code>为0，而<code>false</code>为1）</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">a=2; b=1; c=3; <span class="comment"># 单行可以用分号隔开多个表达式</span></span><br><span class="line">str=<span class="string">'ray-tracing'</span></span><br><span class="line"></span><br><span class="line">[ <span class="variable">$a</span> -gt <span class="variable">$b</span> ] <span class="comment"># 两边一定要空格， [$a -gt $b] 是不合法的</span></span><br><span class="line"><span class="built_in">echo</span> $? <span class="comment"># 比较结果存储于 $? 中 =&gt; 输出为 0 (true)</span></span><br><span class="line"></span><br><span class="line">[ <span class="variable">$c</span> -eq <span class="variable">$c</span> ] <span class="comment"># 等价于 test $c -eq $c</span></span><br><span class="line"><span class="built_in">echo</span> $? <span class="comment"># 输出为 0 (true)</span></span><br><span class="line"></span><br><span class="line">[ <span class="variable">$a</span> -ne 1 -a <span class="variable">$c</span> -eq 3 ] <span class="comment"># 相当于表达式 a != 1 &amp;&amp; c == 3</span></span><br><span class="line">[ <span class="variable">$a</span> -ne 1 -o <span class="variable">$c</span> -ne 3 ] <span class="comment"># 相当于表达式 a != 1 || c != 3</span></span><br><span class="line"></span><br><span class="line">[ <span class="variable">$str</span> != <span class="string">'ray-tracing'</span> ] <span class="comment"># 结果为 1 (false)</span></span><br><span class="line">[ <span class="variable">$str</span> = <span class="string">'ray'</span> ] <span class="comment"># 结果为 1 (false)</span></span><br><span class="line"></span><br><span class="line">[[ a + b = 3 &amp;&amp; a != b ]] <span class="comment"># 结果为 0 (true)</span></span><br><span class="line"><span class="comment"># 此语句只有 bash 下可用</span></span><br></pre></td></tr></table></figure>
+<p>​    熟悉<code>test</code>命令的使用对写出正确的逻辑运算表达式很有帮助，读者可以参考<a href="https://en.wikipedia.org/wiki/Test_(Unix" target="_blank" rel="noopener">维基百科</a>)来了解更多。</p>
+<p>​    不难看出，双中括号<code>[[ ]]</code>相比中括号更加人性化，可以轻松胜任近似<code>C语言</code>的表达式。</p>
+<p>​    大括号<code>{}</code>用于定义范围和通配，在此暂不详细阐述，有兴趣的读者可以参阅<a href="http://www.cnblogs.com/Q--T/archive/2017/09/06/7486872.html" target="_blank" rel="noopener">这篇博客</a>。</p>
+<h3 id="分支语句"><a href="#分支语句" class="headerlink" title="分支语句"></a>分支语句</h3><p>​    与<code>Python</code>不同，shell脚本并不强制要求任何形式的缩进，因此流程语句需要有块结束符号。</p>
+<p>​    典型的if语句如下：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">read</span> a</span><br><span class="line"><span class="built_in">echo</span> -n <span class="variable">$a</span> is</span><br><span class="line"></span><br><span class="line">b=$(( <span class="variable">$a</span> % 2 ))</span><br><span class="line"><span class="keyword">if</span> [ <span class="variable">$b</span> -eq 0 ]; <span class="keyword">then</span> <span class="comment"># 判断 a 是否为偶数</span></span><br><span class="line">	<span class="built_in">echo</span> <span class="string">" even"</span></span><br><span class="line"><span class="keyword">else</span></span><br><span class="line">	<span class="built_in">echo</span> <span class="string">" odd"</span></span><br><span class="line"><span class="keyword">fi</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> [ `whoami` = <span class="string">'root'</span> ]; <span class="keyword">then</span></span><br><span class="line">	<span class="built_in">echo</span> <span class="string">"and you are root ?"</span></span><br><span class="line"><span class="keyword">elif</span> [ `whoami` = <span class="string">'phosphorus15'</span> ]; <span class="keyword">then</span> <span class="comment"># 相当于 C 中的 else if</span></span><br><span class="line">	<span class="built_in">echo</span> <span class="string">"seriously ?"</span></span><br><span class="line"><span class="keyword">else</span></span><br><span class="line">	<span class="built_in">echo</span> <span class="string">"alright ~"</span></span><br><span class="line"><span class="keyword">fi</span></span><br></pre></td></tr></table></figure>
+<p>​    <strong>注意</strong>：无论是循环还是分支控制，都不允许有空的块，即不能出现：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span> [ `whoami` = <span class="string">'root'</span> ]; <span class="keyword">then</span> <span class="comment"># 不能为空！</span></span><br><span class="line"><span class="keyword">else</span></span><br><span class="line">	<span class="built_in">echo</span> <span class="string">"oops !"</span></span><br><span class="line"><span class="keyword">fi</span></span><br></pre></td></tr></table></figure>
+<h3 id="循环语句"><a href="#循环语句" class="headerlink" title="循环语句"></a>循环语句</h3><p>​    和许多高级语言一样，shell具有几种可用的循环控制结构，笔者在此会介绍自己常用的几种：</p>
+<ul>
+<li><p>while 语句 - <em>耳熟能详，不说就会~</em></p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">a=1; b=0;</span><br><span class="line"><span class="keyword">while</span> [ <span class="variable">$a</span> -le 100 ]; <span class="keyword">do</span>	<span class="comment"># 此处也可写作 while (( $a &lt;= 100 )); do</span></span><br><span class="line">	b=$((<span class="variable">$a</span>+<span class="variable">$b</span>))</span><br><span class="line">	a=$((<span class="variable">$a</span>+1)) <span class="comment"># bash 下可写作 ((a++))</span></span><br><span class="line"><span class="keyword">done</span></span><br><span class="line"><span class="built_in">echo</span> <span class="variable">$b</span> <span class="comment"># 输出为 5050</span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p>until 语句 - <em>反其道而行</em></p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">a=1; b=0;</span><br><span class="line">until [ <span class="variable">$a</span> -gt 100 ]; <span class="keyword">do</span></span><br><span class="line">	b=$((<span class="variable">$a</span>+<span class="variable">$b</span>))</span><br><span class="line">	a=$((<span class="variable">$a</span>+1))</span><br><span class="line"><span class="keyword">done</span></span><br><span class="line"><span class="built_in">echo</span> <span class="variable">$b</span> <span class="comment"># 输出为 5050</span></span><br></pre></td></tr></table></figure>
+<p>其实就是把while反过来~</p>
+<p>是不是觉得写起来怪难受的？ 没关系~算术运算本来就不是shell脚本的特长，下面你要看到的，才是shell真正的精髓。</p>
+</li>
+<li><p>for each 语句 - <em>来自C11</em></p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">for</span> i <span class="keyword">in</span> Apple Juice Cake; <span class="keyword">do</span></span><br><span class="line">	<span class="built_in">echo</span> <span class="keyword">do</span> you like <span class="variable">$i</span> ?</span><br><span class="line"><span class="keyword">done</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">for</span> j <span class="keyword">in</span> `seq 0 3`; <span class="keyword">do</span></span><br><span class="line">	<span class="built_in">echo</span> <span class="variable">$j</span></span><br><span class="line"><span class="keyword">done</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">for</span> k <span class="keyword">in</span> `seq 65 70`; <span class="keyword">do</span></span><br><span class="line">	<span class="built_in">echo</span> <span class="variable">$k</span> | awk <span class="string">'&#123;printf("%c", $1)&#125;'</span> <span class="comment"># 将ascii码转为字符输出</span></span><br><span class="line">	<span class="comment"># bash 下可以使用 printf, 即 printf \\x$(printf %x $k)</span></span><br><span class="line"><span class="keyword">done</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">for</span> c <span class="keyword">in</span> &#123;0..8..2&#125;; <span class="keyword">do</span> <span class="comment"># 0~8之间的所有偶数</span></span><br><span class="line">	<span class="built_in">echo</span> <span class="variable">$c</span></span><br><span class="line"><span class="keyword">done</span></span><br><span class="line"><span class="comment"># 注意，上述写法只在bash下有效</span></span><br></pre></td></tr></table></figure>
+<p>输出内容：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">do you like Apple ?</span><br><span class="line">do you like Juice ?</span><br><span class="line">do you like Cake ?</span><br><span class="line">0</span><br><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">ABCDEF</span><br></pre></td></tr></table></figure>
+<p>不难想到，我们先前的<code>while</code>循环可以写作</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">s=0</span><br><span class="line"><span class="keyword">for</span> i <span class="keyword">in</span> `seq 1 100`; <span class="keyword">do</span> <span class="comment"># 创建一个 1 到 100 的序列</span></span><br><span class="line">	s=$((<span class="variable">$s</span>+<span class="variable">$i</span>))</span><br><span class="line"><span class="keyword">done</span></span><br><span class="line"><span class="built_in">echo</span> <span class="variable">$s</span></span><br></pre></td></tr></table></figure>
+<p>假如我们想给目录下的每个文件都创建一个备份，可以这么写：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">for</span> file <span class="keyword">in</span> $(ls); <span class="keyword">do</span> <span class="comment"># 列举所有文件</span></span><br><span class="line">        <span class="comment"># 用 file 判断是否是文件夹， 是就不进行备份</span></span><br><span class="line">        <span class="keyword">if</span> [ <span class="string">"<span class="variable">$(file $file | grep -o directory)</span>"</span> != <span class="string">'directory'</span> ] </span><br><span class="line">        <span class="keyword">then</span></span><br><span class="line">                cp <span class="variable">$file</span> <span class="string">"<span class="variable">$file</span>.bak"</span> <span class="comment"># 用 cp 创建备份</span></span><br><span class="line">                <span class="built_in">echo</span> backup <span class="variable">$file</span></span><br><span class="line">        <span class="keyword">fi</span></span><br><span class="line"><span class="keyword">done</span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p>for 语句 - <em>唔。。？</em></p>
+<p>笔者在前面多次写道，一些语句只能被<code>bash</code>支持，而不能被<code>sh</code>支持。鉴于很多时候我们习惯用<code>sh</code>来运行脚本，在编写脚本时应当尽量避免使用此类语句。</p>
+<p>标准的<code>for</code>语句只有<code>bash</code>能够支持，写法如下：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">for</span>((i=0;i&lt;10;i++));</span><br><span class="line"><span class="keyword">do</span></span><br><span class="line">	<span class="built_in">echo</span> $(expr 10 - <span class="variable">$i</span>) <span class="comment"># 等价于 $((10 - $i))</span></span><br><span class="line"><span class="keyword">done</span></span><br></pre></td></tr></table></figure>
+<p><del>啊~ Old good days，</del>一股浓浓的<code>C语言</code>风味扑面而来。但还是如上所述，<strong>不推荐使用</strong>。</p>
+</li>
+</ul>
+<h2 id="附加内容"><a href="#附加内容" class="headerlink" title="附加内容"></a>附加内容</h2><h3 id="数组"><a href="#数组" class="headerlink" title="数组"></a>数组</h3><p>​    数组是只有<code>bash</code>下才能使用的功能，与很多语言中的数组都十分相似。定义方式如下：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">a=(2 7 5 6 8 1 3 0 4 9)</span><br><span class="line"></span><br><span class="line">b=(&#123;0..9&#125;) <span class="comment"># 0 1 2 3 4 5 6 7 8 9</span></span><br><span class="line">c=(&#123;0..9..2&#125; &#123;1..9..2&#125;) <span class="comment"># 0 2 4 6 8 1 3 5 7 9</span></span><br><span class="line"></span><br><span class="line">strs=(<span class="string">"tomato"</span> <span class="string">"potato"</span> <span class="string">"onion"</span> <span class="string">"lettuce"</span> <span class="string">"okra"</span>)</span><br><span class="line">misc=(<span class="string">"str1"</span> 1 <span class="string">"str2"</span> 5 1)</span><br></pre></td></tr></table></figure>
+<p>​    数组可以直接通过下标访问或者展开</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">echo</span> <span class="variable">$&#123;a[0]&#125;</span> <span class="variable">$&#123;a[3]&#125;</span> <span class="comment"># =&gt; 输出 2 6</span></span><br><span class="line"><span class="built_in">echo</span> <span class="variable">$&#123;b[@]&#125;</span> <span class="comment"># =&gt; 输出 b 中的所有元素，即 ： 0 1 2 3 4 5 6 7 8 9</span></span><br><span class="line"></span><br><span class="line">b[0]=10 <span class="comment"># 修改第一个元素为 10</span></span><br><span class="line"></span><br><span class="line"><span class="built_in">echo</span> <span class="variable">$&#123;b[@]&#125;</span> <span class="comment"># =&gt; 输出 b 中的所有元素，即 ： 10 1 2 3 4 5 6 7 8 9</span></span><br><span class="line"><span class="built_in">echo</span> <span class="variable">$&#123;#misc[@]&#125;</span> <span class="comment"># =&gt; 输出 misc 的长度，即 5</span></span><br><span class="line"><span class="built_in">echo</span> <span class="variable">$&#123;strs[@]:1:3&#125;</span> <span class="comment"># =&gt; 取下标 1~3 的元素，即 : potato onion lettuce</span></span><br><span class="line"></span><br><span class="line"><span class="built_in">unset</span> c[3] <span class="comment"># =&gt; 删除下标为 3 的元素</span></span><br></pre></td></tr></table></figure>
+<p>​    相应的，用<code>for each</code>循环可以快速对数组进行遍历：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">for</span> e <span class="keyword">in</span> <span class="variable">$&#123;c[@]&#125;</span>; <span class="keyword">do</span></span><br><span class="line">	<span class="built_in">echo</span> -n <span class="string">"<span class="variable">$e</span> "</span></span><br><span class="line"><span class="keyword">done</span></span><br><span class="line"><span class="comment"># 由于之前我们删除了一个元素，此处输出为 0 2 4 8 1 3 5 7 9</span></span><br></pre></td></tr></table></figure>
+<h2 id="小结"><a href="#小结" class="headerlink" title="小结"></a>小结</h2><p>​    到此，读者应当已经掌握了基本shell脚本编写的基本技巧，如果想要进一步熟练，推荐读者自己尝试写一些简单的脚本，以此更好地加深理解；同时，也要更多地熟悉linux系统的相关命令。</p>
+<p>​    在最后，笔者放出一个小脚本来复习部分上述内容。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#!/bin/sh</span></span><br><span class="line"><span class="function"><span class="title">factorial</span></span>() &#123;</span><br><span class="line">    <span class="keyword">if</span> [ <span class="variable">$1</span> -eq 0 ]; <span class="keyword">then</span> <span class="built_in">return</span> 1; <span class="keyword">fi</span></span><br><span class="line">    s=1</span><br><span class="line">    <span class="keyword">for</span> i <span class="keyword">in</span> `seq 1 <span class="variable">$1</span>`; <span class="keyword">do</span></span><br><span class="line">    	s=$((<span class="variable">$s</span>*<span class="variable">$i</span>)) <span class="comment"># 阶乘</span></span><br><span class="line">    	trace[$(expr <span class="variable">$i</span> - 1)]=<span class="variable">$s</span> <span class="comment"># 记录部分结果</span></span><br><span class="line">    <span class="keyword">done</span></span><br><span class="line">    <span class="built_in">echo</span> calculation trace [<span class="variable">$&#123;trace[@]&#125;</span>] <span class="comment"># 输出</span></span><br><span class="line">    <span class="built_in">return</span> <span class="variable">$s</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> [ `whoami` = <span class="string">'root'</span> ]; <span class="keyword">then</span></span><br><span class="line">	<span class="built_in">echo</span> root is not allow to execute this script!</span><br><span class="line">	<span class="built_in">exit</span></span><br><span class="line"><span class="keyword">fi</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> [ <span class="variable">$#</span> -lt 2 ]; <span class="keyword">then</span></span><br><span class="line">	<span class="built_in">echo</span> usage : sh fac.sh [n] [output] &gt; /dev/stderr <span class="comment"># 向错误流输出</span></span><br><span class="line"><span class="keyword">elif</span> [ <span class="variable">$1</span> -lt 0 ]; <span class="keyword">then</span></span><br><span class="line">	<span class="built_in">echo</span> n cannot be less than zero ! &gt; /dev/stderr</span><br><span class="line"><span class="keyword">elif</span> [ -z <span class="string">"<span class="variable">$2</span>"</span> ]; <span class="keyword">then</span> <span class="comment"># 判断是否为空</span></span><br><span class="line">	<span class="built_in">echo</span> output file cannot be null ! &gt; /dev/stderr</span><br><span class="line"><span class="keyword">else</span></span><br><span class="line">	factorial <span class="variable">$1</span></span><br><span class="line">	<span class="built_in">echo</span> <span class="variable">$1</span>!=$? &gt; <span class="string">"<span class="variable">$2</span>"</span></span><br><span class="line"><span class="keyword">fi</span></span><br></pre></td></tr></table></figure>
+<p>脚本运行结果：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">phosphorus15@ubuntu:~/Documents$ sh fac.sh </span><br><span class="line">usage : sh fac.sh [n] [output]</span><br><span class="line">phosphorus15@ubuntu:~/Documents$ sh fac.sh 1</span><br><span class="line">usage : sh fac.sh [n] [output]</span><br><span class="line">phosphorus15@ubuntu:~/Documents$ sh fac.sh 1 fac.txt</span><br><span class="line">calculation trace [1]</span><br><span class="line">phosphorus15@ubuntu:~/Documents$ file fac.txt</span><br><span class="line">fac.txt: ASCII text</span><br><span class="line">phosphorus15@ubuntu:~/Documents$ cat fac.txt</span><br><span class="line">1!=1</span><br><span class="line">phosphorus15@ubuntu:~/Documents$ sh fac.sh 5 fac.txt</span><br><span class="line">calculation trace [1 2 6 24 120]</span><br><span class="line">phosphorus15@ubuntu:~/Documents$ cat fac.txt</span><br><span class="line">5!=120</span><br><span class="line">phosphorus15@ubuntu:~/Documents$ sudo sh fac.sh 5 fac.txt</span><br><span class="line">[sudo] password for phosphorus15: </span><br><span class="line">root is not allow to execute this script!</span><br></pre></td></tr></table></figure>
+
+    </div>
+</article>
+                </main>
+                <aside class="aside">
+                    <section class="aside-section">
+                        
+    <h1>Categories</h1>
+
+    
+
+                    </section>
+                    <section class="aside-section">
+                        
+    <h1>Archives</h1>
+
+    <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/">2019</a></li></ul>
+
+
+                    </section>
+                    <section class="aside-section tag">
+                        
+    <h1>Tags</h1>
+
+    <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/article/">article</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/cuda/">cuda</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/environment-setup/">environment setup</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/programming-language/">programming language</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/scientific-computing/">scientific computing</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/script/">script</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/shell/">shell</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/test/">test</a></li></ul>
+
+                    </section>
+                </aside>
+        </div>
+    </body>
+
+</html>
