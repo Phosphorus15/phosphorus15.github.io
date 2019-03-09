@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html>
+<head><meta name="generator" content="Hexo 3.8.0">
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+    <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport">
+    <meta name="keywords" content="hexo, autumn, phosphorus15, cs">
+    <title>
+        Phosphorus&#39; Blog
+    </title>
+    <!-- favicon -->
+    
+    <link rel="icon" href="https://github.githubassets.com/favicon.ico">
+    
+    <link rel="stylesheet" href="/css/style.css">
+
+    <!-- highlight -->
+    <link rel="stylesheet" href="https://cdn.bootcss.com/highlight.js/9.12.0/styles/github-gist.min.css">
+    <script src="//cdn.bootcss.com/highlight.js/9.2.0/highlight.min.js"></script>
+    <script>
+        hljs.initHighlightingOnLoad()
+    </script>
+    <script src="https://cdn.bootcss.com/jquery/3.3.1/jquery.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/frontendsophie/hexo-infinite-scroll@1.0.0/dist/hexo-infinite-scroll.min.css">
+    <script src="https://cdn.jsdelivr.net/gh/frontendsophie/hexo-infinite-scroll@1.0.0/dist/hexo-infinite-scroll.min.js"></script>
+    <script>
+        infiniteScroll()
+
+        // for mobile menu
+        $(function () {
+            $('.social-button').click(function () {
+                if ($('.social-links').hasClass('hide-links')) {
+                    $('.social-links').removeClass('hide-links')
+                } else {
+                    $('.social-links').addClass('hide-links')
+                }
+            })
+        })
+    </script>
+</head>
+
+    <body style="background: url(https://cdn.jsdelivr.net/gh/frontendsophie/hexo-theme-autumn@1.0.0/source/img/button-bg.png) #f3f3f3">
+        <div class="container">
+            <header class="header">
+    <h1 class="title">
+        <a href="/" class="logo">
+            Phosphorus&#39; Blog
+        </a>
+    </h1>
+    <h2 class="desc">
+        Learning, Discovering, Exploiting
+    </h2>
+
+    <nav class="links">
+        <button class="social-button">
+            menu
+        </button>
+        <ul class="social-links hide-links">
+            
+                <li>
+                    <a href="https://github.com/Phosphorus15">
+                        Github
+                    </a>
+                </li>
+                
+                <li>
+                    <a href="https://blog.csdn.net/wxx1237/">
+                        CSDN
+                    </a>
+                </li>
+                
+        </ul>
+    </nav>
+</header>
+                <main class="main">
+                    <article class="post">
+    
+    
+    
+    <h2 class="post-title">
+        初识LLVM
+    </h2>
+    <ul class="post-date">
+        <li>
+            2019-03-09
+        </li>
+        <li>
+            Phosphorus15
+        </li>
+    </ul>
+    <div class="post-content">
+        <p>​    <code>llvm</code>，全称<code>Low-Level Virtual Machine</code>，顾名思义，就是“底层虚拟机”。作为一个功能完备的编程语言后端，已经被<code>clang</code>、<code>ghc</code>等编译器支持（其实<code>clang</code>是完全依赖于llvm的）。通过一套<code>LLVM IR</code>中间字节码/语言，前端和后端（以及优化器/JIT等中间件）得以共享一套简洁易用的表示。</p>
+<p>​    关于<code>llvm</code>的架构以及与传统编译系统的区别，<a href="http://www.aosabook.org/en/llvm.html" target="_blank" rel="noopener">这里</a>有一篇非常好的文章。我在此也不多做阐述了。</p>
+<h3 id="安装"><a href="#安装" class="headerlink" title="安装"></a>安装</h3><p>​    因为这里没有需求，我并没有下载<code>llvm</code>的源码进行编译，仅仅只是把相关的软件包和工具集进行了安装。</p>
+<p>​    体验<code>llvm</code>，最直接的方式就是先安装<code>clang</code>（这也是官网上推荐的方式 :wink: ）</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo apt install clang</span><br></pre></td></tr></table></figure>
+<p>​    <code>clang</code>和<code>gcc</code>的用法差别不大，对应的也有支持<code>C++</code>的<code>clang++</code>。</p>
+<p>​    写一个测试程序</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;stdio.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">(<span class="keyword">int</span> argc,<span class="keyword">char</span> ** argv)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">int</span> a, b, c;</span><br><span class="line">        <span class="built_in">scanf</span>(<span class="string">"%d%d"</span>, &amp;a, &amp;b);</span><br><span class="line">        c = a + b;</span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">"%d + %d = %d\n"</span>, a, b, c);</span><br><span class="line">        <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>​    用<code>clang</code>编译</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">phosphorus15@ubuntu:~/ir$ clang aplusb.c -o aplusb.bin</span><br><span class="line">phosphorus15@ubuntu:~/ir$ ./aplusb.bin </span><br><span class="line">3 5</span><br><span class="line">3 + 5 = 8</span><br></pre></td></tr></table></figure>
+<p>​    <del>也是一个挺正常的C编译器嘛。</del>因为<code>clang</code>是用<code>llvm</code>作为后端的，此时系统里其实已经有了很多<code>llvm</code>的相关库了。下面，我们安装<code>llvm</code>主体和主要组件</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">sudo apt install llvm-runtime <span class="comment"># 运行时</span></span><br><span class="line">sudo apt install llvm <span class="comment"># 编译/优化工具</span></span><br></pre></td></tr></table></figure>
+<h3 id="基本使用"><a href="#基本使用" class="headerlink" title="基本使用"></a>基本使用</h3><p>​    前面提到<code>LLVM IR</code>及其字节码是<code>llvm</code>架构中前后端通用的形式，因为<code>clang</code>是以<code>llvm</code>为后端，不难想见，我们可以让<code>clang</code>生成<code>LLVM IR</code>供我们参考。命令如下：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">phosphorus15@ubuntu:~/ir$ clang -emit-llvm aplusb.c -c -o aplusb.bc</span><br></pre></td></tr></table></figure>
+<p>​    这样，目录下就多出了一个<code>aplusb.bc</code>，需要注意的是，<code>*.bc</code>文件是已经被编码之后的字节码形式，并不是<code>LLVM IR</code>代码，如果直接查看，是不能看到任何有意义的内容的。</p>
+<p>​    此时，如果<code>file</code>这个生成的<code>*.bc</code>文件，会有如下结果</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">phosphorus15@ubuntu:~/ir$ file aplusb.bc</span><br><span class="line">aplusb.bc: LLVM IR bitcode</span><br></pre></td></tr></table></figure>
+<p>​    显示这是一个字节码文件。</p>
+<p>​    和<code>Java虚拟机</code>一样，<code>LLVM</code>也可以直接执行字节码，使用<code>lli</code>命令就能运行一个字节码文件</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">phosphorus15@ubuntu:~/ir$ lli aplusb.bc</span><br><span class="line">15 27 </span><br><span class="line">15 + 27 = 42</span><br></pre></td></tr></table></figure>
+<p>​    那么，有了字节码文件，如何查看相应的<code>LLVM IR</code>呢？这时就要用到<code>llvm-dis</code>命令，在<code>bash</code>下键入</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">phosphorus15@ubuntu:~/ir$ llvm-dis &lt; aplusb.bc &gt; aplusb.ll</span><br></pre></td></tr></table></figure>
+<p>​    这样，就生成了一个包含<code>LLVM IR</code>的<code>*.ll</code>文件，查看文件，有以下内容：</p>
+<figure class="highlight ruby"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br></pre></td><td class="code"><pre><span class="line">; ModuleID = <span class="string">'&lt;stdin&gt;'</span></span><br><span class="line">target datalayout = <span class="string">"e-m:e-i64:64-f80:128-n8:16:32:64-S128"</span></span><br><span class="line">target triple = <span class="string">"x86_64-pc-linux-gnu"</span></span><br><span class="line"></span><br><span class="line">@.str = private unnamed_addr constant [<span class="number">5</span> x i8] c<span class="string">"%d%d\00"</span>, align <span class="number">1</span></span><br><span class="line">@.str.<span class="number">1</span> = private unnamed_addr constant [<span class="number">14</span> x i8] c<span class="string">"%d + %d = %d\0A\00"</span>, align <span class="number">1</span></span><br><span class="line"></span><br><span class="line">; Function <span class="symbol">Attrs:</span> nounwind uwtable</span><br><span class="line">define i32 @main(i32 %argc, i8** %argv) <span class="comment">#0 &#123;</span></span><br><span class="line">  %<span class="number">1</span> = alloca i32, align <span class="number">4</span></span><br><span class="line">  %<span class="number">2</span> = alloca i32, align <span class="number">4</span></span><br><span class="line">  %<span class="number">3</span> = alloca i8**, align <span class="number">8</span></span><br><span class="line">  %a = alloca i32, align <span class="number">4</span></span><br><span class="line">  %b = alloca i32, align <span class="number">4</span></span><br><span class="line">  %c = alloca i32, align <span class="number">4</span></span><br><span class="line">  store i32 <span class="number">0</span>, i32* %<span class="number">1</span>, align <span class="number">4</span></span><br><span class="line">  store i32 %argc, i32* %<span class="number">2</span>, align <span class="number">4</span></span><br><span class="line">  store i8** %argv, i8*** %<span class="number">3</span>, align <span class="number">8</span></span><br><span class="line">  %<span class="number">4</span> = call i32 (i8*, ...) @__isoc99_scanf(i8* getelementptr inbounds ([<span class="number">5</span> x i8], [<span class="number">5</span> x i8]* @.str, i32 <span class="number">0</span>, i32 <span class="number">0</span>), i32* %a, i32* %b)</span><br><span class="line">  %<span class="number">5</span> = load i32, i32* %a, align <span class="number">4</span></span><br><span class="line">  %<span class="number">6</span> = load i32, i32* %b, align <span class="number">4</span></span><br><span class="line">  %<span class="number">7</span> = add nsw i32 %<span class="number">5</span>, %<span class="number">6</span></span><br><span class="line">  store i32 %<span class="number">7</span>, i32* %c, align <span class="number">4</span></span><br><span class="line">  %<span class="number">8</span> = load i32, i32* %a, align <span class="number">4</span></span><br><span class="line">  %<span class="number">9</span> = load i32, i32* %b, align <span class="number">4</span></span><br><span class="line">  %<span class="number">10</span> = load i32, i32* %c, align <span class="number">4</span></span><br><span class="line">  %<span class="number">11</span> = call i32 (i8*, ...) @printf(i8* getelementptr inbounds ([<span class="number">14</span> x i8], [<span class="number">14</span> x i8]* @.str.<span class="number">1</span>, i32 <span class="number">0</span>, i32 <span class="number">0</span>), i32 %<span class="number">8</span>, i32 %<span class="number">9</span>, i32 %<span class="number">10</span>)</span><br><span class="line">  ret i32 <span class="number">0</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">declare i32 @__isoc99_scanf(i8*, ...) <span class="comment">#1</span></span><br><span class="line"></span><br><span class="line">declare i32 @printf(i8*, ...) <span class="comment">#1</span></span><br><span class="line"></span><br><span class="line">attributes <span class="comment">#0 = &#123; nounwind uwtable "disable-tail-calls"="false" "less-precise-fpmad"="false" "no-frame-pointer-elim"="true" "no-frame-pointer-elim-non-leaf" "no-infs-fp-math"="false" "no-nans-fp-math"="false" "stack-protector-buffer-size"="8" "target-cpu"="x86-64" "target-features"="+fxsr,+mmx,+sse,+sse2" "unsafe-fp-math"="false" "use-soft-float"="false" &#125;</span></span><br><span class="line">attributes <span class="comment">#1 = &#123; "disable-tail-calls"="false" "less-precise-fpmad"="false" "no-frame-pointer-elim"="true" "no-frame-pointer-elim-non-leaf" "no-infs-fp-math"="false" "no-nans-fp-math"="false" "stack-protector-buffer-size"="8" "target-cpu"="x86-64" "target-features"="+fxsr,+mmx,+sse,+sse2" "unsafe-fp-math"="false" "use-soft-float"="false" &#125;</span></span><br><span class="line"></span><br><span class="line">!llvm.ident = !&#123;!<span class="number">0</span>&#125;</span><br><span class="line"></span><br><span class="line">!<span class="number">0</span> = !&#123;!<span class="string">"clang version 3.8.0-2ubuntu4 (tags/RELEASE_380/final)"</span>&#125;</span><br></pre></td></tr></table></figure>
+<p>​    暂且不关注这些<code>IR</code>内容的意义（其实我写到这里也不太清楚:joy:），先继续看看<code>llvm</code>的其它组件。</p>
+<p>​    既然可以把字节码反编译成<code>IR</code>，那相对的，应该也是可以进行编译的，我们有<code>llvm-as</code>命令进行编译（其实应该叫编码？）操作</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">phosphorus15@ubuntu:~/ir$ llvm-as &lt; aplusb.ll &gt; aplusb1.bc</span><br><span class="line">phosphorus15@ubuntu:~/ir$ ls</span><br><span class="line">aplusb1.bc  aplusb.bin  aplusb.ll  test.ll</span><br><span class="line">aplusb.bc   aplusb.c    test.bc    test.s</span><br><span class="line">phosphorus15@ubuntu:~/ir$ md5sum &lt; aplusb.bc</span><br><span class="line">ecfb8b7884fecf9e71c35b6a07afcd0c  -</span><br><span class="line">phosphorus15@ubuntu:~/ir$ md5sum &lt; aplusb1.bc</span><br><span class="line">ecfb8b7884fecf9e71c35b6a07afcd0c  -</span><br></pre></td></tr></table></figure>
+<p>​    可以看到，<code>llvm-as</code>生成的<code>aplusb1.bc</code>字节码和原来的<code>aplusb.bc</code>具有相同的<code>MD5</code>校验和，因此可以初步判断两个文件是完全一致的。</p>
+<p>​    从<code>llvm</code>的机制就知道，到字节码，一切都还没有结束，<code>llc</code>命令可以让我们更进一步，通过<code>IR</code>字节码生成目标平台下的汇编文件。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">phosphorus15@ubuntu:~/ir$ llc aplusb.bc -o aplusb.s</span><br></pre></td></tr></table></figure>
+<p>​    默认生成的汇编是当前平台的，如果想要生成别的目标平台的汇编文件，修改参数就能很轻易地改变<code>llc</code>的目标平台</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">phosphorus15@ubuntu:~/ir$ llc -march=arm aplusb.bc -o aplusb-arm.s <span class="comment"># 生成 arm 平台的汇编</span></span><br></pre></td></tr></table></figure>
+<p>​    我们可以看看两个文件的<code>main</code>代码段当中一些很明显的对比（其实就是想凑凑字数:smile:）</p>
+<ul>
+<li><p>aplusb - x86_64</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">main:                                   # @main</span><br><span class="line">	.cfi_startproc</span><br><span class="line"># BB#0:</span><br><span class="line">	pushq	%rbp</span><br><span class="line">.Ltmp0:</span><br><span class="line">	.cfi_def_cfa_offset 16</span><br><span class="line">.Ltmp1:</span><br><span class="line">	.cfi_offset %rbp, -16</span><br><span class="line">	movq	%rsp, %rbp</span><br><span class="line">.Ltmp2:</span><br><span class="line">	.cfi_def_cfa_register %rbp</span><br><span class="line">	subq	$32, %rsp</span><br><span class="line">	...</span><br><span class="line">	callq	__isoc99_scanf</span><br><span class="line">	...</span><br><span class="line">	movl	$.L.str.1, %edi</span><br><span class="line">	xorl	%eax, %eax</span><br><span class="line">	callq	printf</span><br><span class="line">	...</span><br><span class="line">	retq</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>aplusb - arm</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">main:                                   @ @main</span><br><span class="line">	.fnstart</span><br><span class="line">@ BB#0:</span><br><span class="line">	push	&#123;r11, lr&#125;</span><br><span class="line">	mov	r11, sp</span><br><span class="line">	sub	sp, sp, #32</span><br><span class="line">	...</span><br><span class="line">	bl	__isoc99_scanf</span><br><span class="line">	...</span><br><span class="line">	str	r3, [sp, #4]</span><br><span class="line">	bl	printf</span><br><span class="line">	mov	r0, #0</span><br><span class="line">	mov	sp, r11</span><br><span class="line">	pop	&#123;r11, lr&#125;</span><br><span class="line">	mov	pc, lr</span><br><span class="line">	.align	2</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<p>​    因为架构的差异，很多指令和操作的实现方式都风格迥异，但由此我们也能从侧面看出<code>llvm</code>的强大能力——把来自不同前端编译器（意味着不同语言、子语言）的<code>IR</code>输出成不同平台的汇编。其弹性和兼容性都是十分可观的。</p>
+<p>​    当得到汇编文件以后，就能够直接进行编译了，可以使用一些常见的汇编器，也可以直接用<code>gcc</code>来完成汇编和链接。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">phosphorus15@ubuntu:~/ir$ gcc aplusb.s -o aplusb.native</span><br><span class="line">phosphorus15@ubuntu:~/ir$ ./aplusb.native </span><br><span class="line">233 666</span><br><span class="line">233 + 666 = 899</span><br></pre></td></tr></table></figure>
+<p>​    由此，已经大致介绍完了大部分常用的相关命令，更多内容可以参考<a href="https://llvm.org/docs/CommandGuide/" target="_blank" rel="noopener">官方文档</a>。</p>
+<h3 id="LLVM-IR"><a href="#LLVM-IR" class="headerlink" title="LLVM IR"></a>LLVM IR</h3><p>​    可能还会再更新吧，<del>作者是个大懒虫</del>。</p>
+
+    </div>
+</article>
+                </main>
+                <aside class="aside">
+                    <section class="aside-section">
+                        
+    <h1>Categories</h1>
+
+    
+
+                    </section>
+                    <section class="aside-section">
+                        
+    <h1>Archives</h1>
+
+    <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/">2019</a></li></ul>
+
+
+                    </section>
+                    <section class="aside-section tag">
+                        
+    <h1>Tags</h1>
+
+    <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/article/">article</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/binary/">binary</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/compiler/">compiler</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/ctf/">ctf</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/cuda/">cuda</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/environment-setup/">environment setup</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/heap/">heap</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/llvm/">llvm</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/programming-language/">programming language</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/scientific-computing/">scientific computing</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/script/">script</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/shell/">shell</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/test/">test</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/writeup/">writeup</a></li></ul>
+
+                    </section>
+                </aside>
+        </div>
+    </body>
+
+</html>
