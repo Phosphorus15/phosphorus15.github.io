@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html>
+<head><meta name="generator" content="Hexo 3.8.0">
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+    <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport">
+    <meta name="keywords" content="hexo, autumn, phosphorus15, cs">
+    <title>
+        Phosphorus&#39; Blog
+    </title>
+    <!-- favicon -->
+    
+    <link rel="icon" href="https://github.githubassets.com/favicon.ico">
+    
+    <link rel="stylesheet" href="/css/style.css">
+
+    <!-- highlight -->
+    <link rel="stylesheet" href="https://cdn.bootcss.com/highlight.js/9.12.0/styles/github-gist.min.css">
+    <script src="//cdn.bootcss.com/highlight.js/9.2.0/highlight.min.js"></script>
+    <script>
+        hljs.initHighlightingOnLoad()
+    </script>
+    <script src="https://cdn.bootcss.com/jquery/3.3.1/jquery.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/frontendsophie/hexo-infinite-scroll@1.0.0/dist/hexo-infinite-scroll.min.css">
+    <script src="https://cdn.jsdelivr.net/gh/frontendsophie/hexo-infinite-scroll@1.0.0/dist/hexo-infinite-scroll.min.js"></script>
+    <script>
+        infiniteScroll()
+
+        // for mobile menu
+        $(function () {
+            $('.social-button').click(function () {
+                if ($('.social-links').hasClass('hide-links')) {
+                    $('.social-links').removeClass('hide-links')
+                } else {
+                    $('.social-links').addClass('hide-links')
+                }
+            })
+        })
+    </script>
+</head>
+
+    <body style="background: url(https://cdn.jsdelivr.net/gh/frontendsophie/hexo-theme-autumn@1.0.0/source/img/button-bg.png) #f3f3f3">
+        <div class="container">
+            <header class="header">
+    <h1 class="title">
+        <a href="/" class="logo">
+            Phosphorus&#39; Blog
+        </a>
+    </h1>
+    <h2 class="desc">
+        Learning, Discovering, Exploiting
+    </h2>
+
+    <nav class="links">
+        <button class="social-button">
+            menu
+        </button>
+        <ul class="social-links hide-links">
+            
+                <li>
+                    <a href="https://github.com/Phosphorus15">
+                        Github
+                    </a>
+                </li>
+                
+                <li>
+                    <a href="https://blog.csdn.net/wxx1237/">
+                        CSDN
+                    </a>
+                </li>
+                
+        </ul>
+    </nav>
+</header>
+                <main class="main">
+                    <article class="post">
+    
+    
+    
+    <h2 class="post-title">
+        LLVM IR Builder 小结
+    </h2>
+    <ul class="post-date">
+        <li>
+            2019-05-29
+        </li>
+        <li>
+            Phosphorus15
+        </li>
+    </ul>
+    <div class="post-content">
+        <p>​    在使用<code>LLVM</code>作为编程语言（尤其是静态语言）后端时，生成<code>IR</code>是一切优化、检查和进一步编译的基础。因此，熟练使用<code>IR Builder</code>尤为重要。</p>
+<p>​    以下笔者将以几段代码为基础，简述<code>LLVM IR Builder</code>中的主要方法和相关类型。</p>
+<h3 id="准备工作"><a href="#准备工作" class="headerlink" title="准备工作"></a>准备工作</h3><p>​    为了顺利编译和运行本文中的代码，你需要：</p>
+<ul>
+<li><p>已配置好的<code>llvm</code>环境</p>
+</li>
+<li><p>确保<code>llvm</code>的头文件位置已被正确包含</p>
+</li>
+<li><p>确认<code>llvm</code>的相关库已被正确链接</p>
+<p>笔者使用<code>cmake 1.3.5</code>进行构建,<code>CMakeLists.txt</code>如下</p>
+<figure class="highlight cmake"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">cmake_minimum_required</span>(VERSION <span class="number">3.5</span>)</span><br><span class="line"><span class="keyword">project</span>(TestLLVM)</span><br><span class="line"></span><br><span class="line"><span class="keyword">include_directories</span>(<span class="string">"/usr/include/llvm-3.8/"</span>) <span class="comment"># llvm api （包含 ir builder）</span></span><br><span class="line"><span class="keyword">include_directories</span>(<span class="string">"/usr/include/llvm-c-3.8/"</span>) <span class="comment"># llvm runtime api</span></span><br><span class="line"><span class="keyword">link_libraries</span>(<span class="string">"/usr/lib/llvm-3.8/lib/libLLVM.so"</span>) <span class="comment"># llvm 的动态链接库</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">set</span>(CMAKE_CXX_STANDARD <span class="number">14</span>) <span class="comment"># 使用 C++14</span></span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<h3 id="创建-IR-Builder"><a href="#创建-IR-Builder" class="headerlink" title="创建 IR Builder"></a>创建 IR Builder</h3><p>​    在正确配置了<code>llvm</code>后，就可以创建和使用<code>IR Builder</code>了，以下是一段（很长的）模板代码。</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;iostream&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;cstdio&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">"llvm/ADT/APFloat.h"</span> <span class="comment">// 所有相关头文件</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">"llvm/ADT/STLExtras.h"</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">"llvm/IR/BasicBlock.h"</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">"llvm/IR/Constants.h"</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">"llvm/IR/DerivedTypes.h"</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">"llvm/IR/Function.h"</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">"llvm/IR/IRBuilder.h"</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">"llvm/IR/LLVMContext.h"</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">"llvm/IR/Module.h"</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">"llvm/IR/Type.h"</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">"llvm/IR/Verifier.h"</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">"llvm/Support/raw_os_ostream.h"</span></span></span><br><span class="line"></span><br><span class="line"><span class="keyword">static</span> llvm::LLVMContext context;</span><br><span class="line"><span class="keyword">static</span> llvm::IRBuilder&lt;&gt; builder(context);</span><br><span class="line"><span class="keyword">static</span> <span class="built_in">std</span>::<span class="built_in">unique_ptr</span>&lt;llvm::Module&gt; global;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    global = <span class="built_in">std</span>::make_unique&lt;llvm::Module&gt;(<span class="string">"&lt;test&gt;"</span>, context);</span><br><span class="line">    <span class="comment">// write whatever you want</span></span><br><span class="line">    global-&gt;print(llvm::outs(), <span class="literal">nullptr</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>​    头文件多得吓人？没关系，这就是我们需要的所有头文件了。当然，很多情况下，把这些头文件用一个单独的头文件包含确实会让代码显得更简洁。</p>
+<p>​    在上述代码中，我们定义了三个全局变量，意义分别如下：</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">static</span> llvm::LLVMContext context;</span><br><span class="line"><span class="comment">// 当前LLVM的上下文</span></span><br><span class="line"><span class="keyword">static</span> llvm::IRBuilder&lt;&gt; builder(context);</span><br><span class="line"><span class="comment">// IR Builder， 我们最想要的东西</span></span><br><span class="line"><span class="keyword">static</span> <span class="built_in">std</span>::<span class="built_in">unique_ptr</span>&lt;llvm::Module&gt; global;</span><br><span class="line"><span class="comment">// 我们构造的 llvm 模块，如果你不知道什么是“模块”，建议先去了解一下 llvm 的架构</span></span><br></pre></td></tr></table></figure>
+<p>​    这三件套是我们构建<code>llvm</code>模块的基础。在这里，“模块”只是一个预留的空指针，我们需要真正向<code>IR Builder</code>“声明”这个模块：</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">global = <span class="built_in">std</span>::make_unique&lt;llvm::Module&gt;(<span class="string">"&lt;test&gt;"</span>, context);</span><br><span class="line"><span class="comment">// 创建一个模块，以`context`为上下文，名字为`&lt;test&gt;`</span></span><br></pre></td></tr></table></figure>
+<p>​    如果你不熟悉<code>C++</code>的智能指针，上述代码可以看作（其实它们并不等价）：</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">global = <span class="keyword">new</span> llvm::Module(<span class="string">"&lt;test&gt;"</span>, context);</span><br></pre></td></tr></table></figure>
+<p>​    在“声明”了模块后，<code>&lt;test&gt;</code>模块便实际存在于上下文中了，我们可以用以下代码来显示这个模块的<code>IR Code</code></p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">global-&gt;print(llvm::outs(), <span class="literal">nullptr</span>);</span><br><span class="line"><span class="comment">// llvm::outs() 指向 stdout （标准输出流）</span></span><br></pre></td></tr></table></figure>
+<p>​    此时，编译运行，我们会获得以下输出</p>
+<figure class="highlight ruby"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">;ModuleID = <span class="string">'&lt;test&gt;'</span></span><br></pre></td></tr></table></figure>
+<p>​    模块是空的，所以我们只看到了<code>ModuleID</code>的定义:joy:。但至少，我们已经向生成正经的<code>IR</code>迈出一小步了，不是吗？</p>
+<h3 id="创建全局变量（常量）"><a href="#创建全局变量（常量）" class="headerlink" title="创建全局变量（常量）"></a>创建全局变量（常量）</h3><figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">auto</span> intType = llvm::Type::getInt32Ty(context); </span><br><span class="line"><span class="comment">// 获取int32类型</span></span><br><span class="line"><span class="keyword">auto</span> num = llvm::ConstantInt::get( <span class="comment">// 创建常量（值）</span></span><br><span class="line">    intType <span class="comment">// 类型</span></span><br><span class="line">    , llvm::APInt(<span class="number">32</span>, <span class="number">233</span>)); <span class="comment">// 常量的值， APInt(32, 233) 代表 32 位无符号的 `233`</span></span><br><span class="line"><span class="keyword">auto</span> test = <span class="keyword">new</span> llvm::GlobalVariable( <span class="comment">// 创建全局常量</span></span><br><span class="line">    *global.get() <span class="comment">// 当前 module</span></span><br><span class="line">    , intType <span class="comment">// 类型</span></span><br><span class="line">    , <span class="literal">true</span> <span class="comment">// 是否为常量 - 如果为false，则是创建变量</span></span><br><span class="line">    , llvm::GlobalVariable::ExternalLinkage <span class="comment">// 链接类型</span></span><br><span class="line">    , num <span class="comment">// 全局常量对应的值</span></span><br><span class="line">    , <span class="string">"test"</span>); <span class="comment">// 全局常量的名称</span></span><br></pre></td></tr></table></figure>
+<p>​    添加代码后运行程序，会获得以下输出</p>
+<figure class="highlight ruby"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">; ModuleID = <span class="string">'&lt;test&gt;'</span></span><br><span class="line"></span><br><span class="line">@test = constant i32 <span class="number">233</span></span><br></pre></td></tr></table></figure>
+<p>​    可以看到，模块中增加了对<code>test</code>常量的定义，是类型为32位整型的<code>233</code>值。</p>
+<p>​    同样的，也可以添加字符串等特殊类型的全局变量/常量，只是步骤更为复杂。</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">std</span>::<span class="built_in">string</span> str = <span class="string">"Hello, LLVM !"</span>;</span><br><span class="line"><span class="comment">// 要定义为全局变量的字符串</span></span><br><span class="line"><span class="built_in">std</span>::<span class="built_in">vector</span>&lt;llvm::Constant *&gt; bytes;</span><br><span class="line"></span><br><span class="line"><span class="keyword">auto</span> byteType = llvm::Type::getInt8Ty(context);</span><br><span class="line"><span class="comment">// 获取 int8 类型</span></span><br><span class="line"><span class="keyword">auto</span> byteArrayType = llvm::ArrayType::get(byteType, str.size());</span><br><span class="line"><span class="comment">// 获取字符串类型（字节数组）</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">for</span> (<span class="keyword">auto</span> c : str)</span><br><span class="line">    bytes.push_back( <span class="comment">// 将每个字符依次定义为int8的常值</span></span><br><span class="line">    	llvm::ConstantInt::get(</span><br><span class="line">            byteType</span><br><span class="line">            , llvm::APInt(<span class="number">8</span>, c)));</span><br><span class="line"></span><br><span class="line"><span class="keyword">auto</span> byteArray = llvm::ConstantArray::get( <span class="comment">// 创建int8数组</span></span><br><span class="line">    byteArrayType</span><br><span class="line">    , bytes);</span><br><span class="line"><span class="keyword">auto</span> _str = <span class="keyword">new</span> llvm::GlobalVariable(*global.get(), byteArrayType <span class="comment">// 创建全局变量</span></span><br><span class="line">	, <span class="literal">false</span> <span class="comment">//  这里设置为false，代表变量而非常量</span></span><br><span class="line">    , llvm::GlobalVariable::ExternalLinkage</span><br><span class="line">    , byteArray, <span class="string">"str"</span>);</span><br></pre></td></tr></table></figure>
+<p>​    添加上述代码后运行程序，获得以下输出：</p>
+<figure class="highlight ruby"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">; ModuleID = <span class="string">'&lt;test&gt;'</span></span><br><span class="line"></span><br><span class="line">@test = constant i32 <span class="number">233</span></span><br><span class="line">@str = global [<span class="number">13</span> x i8] c<span class="string">"Hello, LLVM !"</span></span><br></pre></td></tr></table></figure>
+<p>​    通过<code>llc</code>对输出进行编译，可以获得以下汇编（amd64架构）</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">phosphorus15@ubuntu:~/llvm-test$ ./llir1 | llc</span><br><span class="line">        .text</span><br><span class="line">        .file   &quot;&lt;stdin&gt;&quot;</span><br><span class="line">        .type   test,@object            # @test</span><br><span class="line">        .section        .rodata,&quot;a&quot;,@progbits</span><br><span class="line">        .globl  test</span><br><span class="line">        .align  4</span><br><span class="line">test:</span><br><span class="line">        .long   233                     # 0xe9</span><br><span class="line">        .size   test, 4</span><br><span class="line"></span><br><span class="line">        .type   str,@object             # @str</span><br><span class="line">        .data</span><br><span class="line">        .globl  str</span><br><span class="line">str:</span><br><span class="line">        .ascii  &quot;Hello, LLVM !&quot;</span><br><span class="line">        .size   str, 13</span><br><span class="line">        .section        &quot;.note.GNU-stack&quot;,&quot;&quot;,@progbits</span><br></pre></td></tr></table></figure>
+<h3 id="声明函数"><a href="#声明函数" class="headerlink" title="声明函数"></a>声明函数</h3><p><em>咕咕咕</em></p>
+
+    </div>
+</article>
+                </main>
+                <aside class="aside">
+                    <section class="aside-section">
+                        
+    <h1>Categories</h1>
+
+    
+
+                    </section>
+                    <section class="aside-section">
+                        
+    <h1>Archives</h1>
+
+    <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/">2019</a></li></ul>
+
+
+                    </section>
+                    <section class="aside-section tag">
+                        
+    <h1>Tags</h1>
+
+    <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/article/">article</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/binary/">binary</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/compiler/">compiler</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/ctf/">ctf</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/cuda/">cuda</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/environment-setup/">environment setup</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/heap/">heap</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/llvm/">llvm</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/programming-language/">programming language</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/scientific-computing/">scientific computing</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/script/">script</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/shell/">shell</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/test/">test</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/tips/">tips</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/writeup/">writeup</a></li></ul>
+
+                    </section>
+                </aside>
+        </div>
+    </body>
+
+</html>
