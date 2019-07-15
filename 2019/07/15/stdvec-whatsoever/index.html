@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html>
+<head><meta name="generator" content="Hexo 3.8.0">
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+    <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport">
+    <meta name="keywords" content="hexo, autumn, phosphorus15, cs">
+    <title>
+        Phosphorus&#39; Blog
+    </title>
+    <!-- favicon -->
+    
+    <link rel="icon" href="https://github.githubassets.com/favicon.ico">
+    
+    <link rel="stylesheet" href="/css/style.css">
+
+    <!-- highlight -->
+    <link rel="stylesheet" href="https://cdn.bootcss.com/highlight.js/9.12.0/styles/github-gist.min.css">
+    <script src="//cdn.bootcss.com/highlight.js/9.2.0/highlight.min.js"></script>
+    <script>
+        hljs.initHighlightingOnLoad()
+    </script>
+    <script src="https://cdn.bootcss.com/jquery/3.3.1/jquery.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/frontendsophie/hexo-infinite-scroll@1.0.0/dist/hexo-infinite-scroll.min.css">
+    <script src="https://cdn.jsdelivr.net/gh/frontendsophie/hexo-infinite-scroll@1.0.0/dist/hexo-infinite-scroll.min.js"></script>
+    <script>
+        infiniteScroll()
+
+        // for mobile menu
+        $(function () {
+            $('.social-button').click(function () {
+                if ($('.social-links').hasClass('hide-links')) {
+                    $('.social-links').removeClass('hide-links')
+                } else {
+                    $('.social-links').addClass('hide-links')
+                }
+            })
+        })
+    </script>
+</head>
+
+    <body style="background: url(https://cdn.jsdelivr.net/gh/frontendsophie/hexo-theme-autumn@1.0.0/source/img/button-bg.png) #f3f3f3">
+        <div class="container">
+            <header class="header">
+    <h1 class="title">
+        <a href="/" class="logo">
+            Phosphorus&#39; Blog
+        </a>
+    </h1>
+    <h2 class="desc">
+        Learning, Discovering, Exploiting
+    </h2>
+
+    <nav class="links">
+        <button class="social-button">
+            menu
+        </button>
+        <ul class="social-links hide-links">
+            
+                <li>
+                    <a href="https://github.com/Phosphorus15">
+                        Github
+                    </a>
+                </li>
+                
+                <li>
+                    <a href="https://blog.csdn.net/wxx1237/">
+                        CSDN
+                    </a>
+                </li>
+                
+        </ul>
+    </nav>
+</header>
+                <main class="main">
+                    <article class="post">
+    
+    
+    
+    <h2 class="post-title">
+        std::vec::Vec 的基本法
+    </h2>
+    <ul class="post-date">
+        <li>
+            2019-07-15
+        </li>
+        <li>
+            Phosphorus15
+        </li>
+    </ul>
+    <div class="post-content">
+        <p>​    众所周知，<code>std::vec::Vec</code>是Rust中最常用的一种变长数组实现。由于实现了诸多特性，并且可以被方便地解构成<code>Slice</code>，在生产环境中被广泛应用。</p>
+<p>​    和<code>Rust</code>所保证的一致，在常规情况下使用<code>Vec</code>的实现，是不会（或者说极少会）导致内存泄露等问题的。但同时，<code>Vec</code>本身的实现也提供了一些非安全（unsafe）的方法，在此假设读者或多或少已经接触过这些非安全方法，在此基础上对<code>Vec</code>进行介绍。</p>
+<h3 id="来自Vec的基本法"><a href="#来自Vec的基本法" class="headerlink" title="来自Vec的基本法"></a>来自<code>Vec</code>的基本法</h3><p>​    很多使用者倾向于把<code>Vec</code>当成黑箱，或者仅仅了解其内存的分配机制，实际上，能够在不了解这些的情况下安全地使用<code>Vec</code>正是达到了其设计目的。但当对<code>Vec</code>的非安全方法有需求时，明白其内部实现就至关重要。实际上，<code>Rust</code>在官方文档中对其实现做了一系列的<code>保证</code>（Guarantees），以防止开发者在非安全情况下使用<code>Vec</code>时踩雷。</p>
+<h4 id="Vec的结构"><a href="#Vec的结构" class="headerlink" title="Vec的结构"></a><code>Vec</code>的结构</h4><p>​    <code>Rust</code>对向量结构体的成员结构做了保证——<strong>在任意情况下，<code>Vec</code>均由一个三元组(Triplet)组成</strong>。这个三元组分别包含了向量的<code>长度</code>(length)——指示目前向量内的有效元素数，<code>容量</code>(capacity)——指示向量目前已分配的总空间，与指向数据的<code>指针</code>(pointer)。并且有以下两点：</p>
+<ul>
+<li><code>指针</code>(pointer)永远是非空的（空指针优化）</li>
+<li>不保证三元组变量的顺序</li>
+</ul>
+<p>​    在<code>Rust 1.34.0</code>的标准库中，<code>Vec</code>的定义如下：</p>
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#[stable(feature = <span class="meta-string">"rust1"</span>, since = <span class="meta-string">"1.0.0"</span>)]</span></span><br><span class="line"><span class="keyword">pub</span> <span class="class"><span class="keyword">struct</span> <span class="title">Vec</span></span>&lt;T&gt; &#123;</span><br><span class="line">    buf: RawVec&lt;T&gt;,</span><br><span class="line">    len: <span class="built_in">usize</span>,</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="meta">#[allow(missing_debug_implementations)]</span></span><br><span class="line"><span class="keyword">pub</span> <span class="class"><span class="keyword">struct</span> <span class="title">RawVec</span></span>&lt;T, A: Alloc = Global&gt; &#123;</span><br><span class="line">    ptr: Unique&lt;T&gt;,</span><br><span class="line">    cap: <span class="built_in">usize</span>,</span><br><span class="line">    a: A,</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>​    其中，<code>Global</code>是一个默认的全局内存分配实现，其实际大小为<code>0</code>。在<code>RawVec</code>中不占任何空间。在<del>上古版本</del><code>aplha 1.0</code>中，有一个更加直观的简化定义</p>
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">pub</span> <span class="class"><span class="keyword">struct</span> <span class="title">Vec</span></span>&lt;T&gt; &#123;</span><br><span class="line">    ptr: NonZero&lt;*<span class="keyword">mut</span> T&gt;,</span><br><span class="line">    len: uint,</span><br><span class="line">    cap: uint,</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>​    值得注意的是，两个版本虽然相近，但是<code>len</code>和<code>cap</code>的顺序却被调换了。</p>
+<p>​    <code>Unique&lt;T&gt;</code>也是一个很有意思的类型，在此可以暂时看作非空指针。</p>
+<h4 id="空间分配与管理"><a href="#空间分配与管理" class="headerlink" title="空间分配与管理"></a>空间分配与管理</h4><p>​    简单来说，向量的空间分配主要存在于两种情况——<strong>创建</strong>时和<strong>扩张</strong>时</p>
+<p>​    在<strong>创建</strong>一个向量时，任何显式或隐式地指定一个空向量的行为会致使空间不被预先分配，此时<code>ptr : Unique&lt;T&gt;</code>为空（即<code>Unique::empty()</code>）。这些行为包括但不限于：</p>
+<ul>
+<li><p>使用<code>Vec::new()</code>初始化</p>
+</li>
+<li><p>使用<code>vec![]</code>宏</p>
+</li>
+<li><p>调用<code>Vec::with_capacity(0)</code></p>
+</li>
+<li><p>用大小为<code>0</code>的类型作为<code>Vec</code>的泛型参数</p>
+<p>按照<code>Rust</code>文档的定义，在创建时分配内存的前提是有<code>mem::size_of::&lt;T&gt;() * capacity() &gt; 0</code></p>
+<p>以下是一个段证明代码</p>
+</li>
+</ul>
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">pub</span> <span class="class"><span class="keyword">struct</span> <span class="title">Empty</span></span>(); <span class="comment">// 空类型</span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">fn</span> <span class="title">main</span></span>() &#123;</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="built_in">println!</span>(<span class="string">"using vec![]"</span>);</span><br><span class="line">        <span class="keyword">let</span> vec: <span class="built_in">Vec</span>&lt;<span class="built_in">u8</span>&gt; = <span class="built_in">vec!</span>[];</span><br><span class="line">        <span class="built_in">println!</span>(<span class="string">"  len: &#123;&#125;"</span>, vec.len());</span><br><span class="line">        <span class="built_in">println!</span>(<span class="string">"  cap: &#123;&#125;"</span>, vec.capacity());</span><br><span class="line">        <span class="built_in">println!</span>(<span class="string">"  ptr: 0x&#123;:x&#125;"</span>, vec.as_ptr() <span class="keyword">as</span> <span class="built_in">u64</span>);</span><br><span class="line">    &#125;</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="built_in">println!</span>(<span class="string">"using vec![] with elements"</span>);</span><br><span class="line">        <span class="keyword">let</span> vec: <span class="built_in">Vec</span>&lt;<span class="built_in">u8</span>&gt; = <span class="built_in">vec!</span>[<span class="number">1</span>];</span><br><span class="line">        <span class="built_in">println!</span>(<span class="string">"  len: &#123;&#125;"</span>, vec.len());</span><br><span class="line">        <span class="built_in">println!</span>(<span class="string">"  cap: &#123;&#125;"</span>, vec.capacity());</span><br><span class="line">        <span class="built_in">println!</span>(<span class="string">"  ptr: 0x&#123;:x&#125;"</span>, vec.as_ptr() <span class="keyword">as</span> <span class="built_in">u64</span>);</span><br><span class="line">    &#125;</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="built_in">println!</span>(<span class="string">"using vec::with_capacity(0)"</span>);</span><br><span class="line">        <span class="keyword">let</span> vec: <span class="built_in">Vec</span>&lt;<span class="built_in">u8</span>&gt; = <span class="built_in">Vec</span>::with_capacity(<span class="number">0</span>);</span><br><span class="line">        <span class="built_in">println!</span>(<span class="string">"  len: &#123;&#125;"</span>, vec.len());</span><br><span class="line">        <span class="built_in">println!</span>(<span class="string">"  cap: &#123;&#125;"</span>, vec.capacity());</span><br><span class="line">        <span class="built_in">println!</span>(<span class="string">"  ptr: 0x&#123;:x&#125;"</span>, vec.as_ptr() <span class="keyword">as</span> <span class="built_in">u64</span>);</span><br><span class="line">    &#125;</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="built_in">println!</span>(<span class="string">"using 0-sized type"</span>);</span><br><span class="line">        <span class="keyword">let</span> vec: <span class="built_in">Vec</span>&lt;Empty&gt; = <span class="built_in">vec!</span>[Empty()]; <span class="comment">// 此处向量非空</span></span><br><span class="line">        <span class="built_in">println!</span>(<span class="string">"  len: &#123;&#125;"</span>, vec.len());</span><br><span class="line">        <span class="built_in">println!</span>(<span class="string">"  cap: &#123;&#125;"</span>, vec.capacity());</span><br><span class="line">        <span class="built_in">println!</span>(<span class="string">"  ptr: 0x&#123;:x&#125;"</span>, vec.as_ptr() <span class="keyword">as</span> <span class="built_in">u64</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>​    获得的输出如下：</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">using</span> <span class="string">vec![]</span></span><br><span class="line"><span class="attr">  len:</span> <span class="number">0</span></span><br><span class="line"><span class="attr">  cap:</span> <span class="number">0</span></span><br><span class="line"><span class="attr">  ptr:</span> <span class="number">0x1</span></span><br><span class="line"><span class="string">using</span> <span class="string">vec![]</span> <span class="string">with</span> <span class="string">elements</span></span><br><span class="line"><span class="attr">  len:</span> <span class="number">1</span></span><br><span class="line"><span class="attr">  cap:</span> <span class="number">1</span></span><br><span class="line"><span class="attr">  ptr:</span> <span class="number">0x126931d6580</span></span><br><span class="line"><span class="string">using</span> <span class="attr">vec::with_capacity(0)</span></span><br><span class="line"><span class="attr">  len:</span> <span class="number">0</span></span><br><span class="line"><span class="attr">  cap:</span> <span class="number">0</span></span><br><span class="line"><span class="attr">  ptr:</span> <span class="number">0x1</span></span><br><span class="line"><span class="string">using</span> <span class="number">0</span><span class="bullet">-sized</span> <span class="string">type</span></span><br><span class="line"><span class="attr">  len:</span> <span class="number">1</span></span><br><span class="line"><span class="attr">  cap:</span> <span class="number">18446744073709551615</span></span><br><span class="line"><span class="attr">  ptr:</span> <span class="number">0x1</span></span><br></pre></td></tr></table></figure>
+<p>​    从输出中，可以看出：</p>
+<ul>
+<li>只有以非空的形式初始化向量，才会使向量分配有效内存，否则<code>Vec</code>中的指针为空</li>
+<li>以空类型创建向量并不会导致任何空间分配的行为</li>
+<li>以空类型创建的向量对应的<code>cap</code>是一个特殊值，对应的是<code>usize::MAX</code>（即<code>2^64 - 1</code>）</li>
+</ul>
+<p>​    除了在创建时分配内存，向量<strong>扩张</strong>时，如果出现已分配内存不足的情况，将会触发空间分配。这种分配通常会导致内存拷贝的发生。例如，<code>Vec::push</code>的实现有如下判断</p>
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">pub</span> <span class="function"><span class="keyword">fn</span> <span class="title">push</span></span>(&amp;<span class="keyword">mut</span> <span class="keyword">self</span>, value: T) &#123;</span><br><span class="line">    <span class="comment">// This will panic or abort if we would allocate &gt; isize::MAX bytes</span></span><br><span class="line">    <span class="comment">// or if the length increment would overflow for zero-sized types.</span></span><br><span class="line">	<span class="keyword">if</span> <span class="keyword">self</span>.len == <span class="keyword">self</span>.buf.cap() &#123;</span><br><span class="line">		<span class="keyword">self</span>.reserve(<span class="number">1</span>);</span><br><span class="line">	&#125;</span><br></pre></td></tr></table></figure>
+<p>​    这意味着，当对向量元素进行追加时，如果分配的内存已经不足，向量将会自动扩张。</p>
+<p>​    <code>Rust</code>并未显式地保证任何扩张策略，但在目前的实现中，只有在临界条件下才会触发扩张，而且扩张的空间则是刚好够新增的元素使用。因此，在实际生产环境中，为了减少内存拷贝的触发次数，推荐预先指定好向量的容量，或者在适当时刻调用<code>reserve</code>以及<code>reserve_exact</code>来预分配内存。</p>
+<h4 id="内存的使用原则"><a href="#内存的使用原则" class="headerlink" title="内存的使用原则"></a>内存的使用原则</h4><ol start="0">
+<li>在默认情况下，<code>Vec</code>会保证尽量最小的内存使用量</li>
+<li><code>Vec</code>不会主动覆写任何已被移出向量元素原空间的内容，但也<strong>不保证</strong>这些空间不被用作其它用途</li>
+<li>在保证写入内容有效的情况下，<strong>可以</strong>通过<code>unsafe</code>的方式在长度以外的范围写入数据，并手动将长度调整至此位置</li>
+<li>不论何时，<code>Vec</code>所分配的内存都不会被优化到栈上，而是统一从堆上分配。（有一个<code>crate</code>实现了这种优化，可以在<a href="https://github.com/servo/rust-smallvec" target="_blank" rel="noopener">Github</a>上看到）</li>
+<li><strong>不保证</strong>向量中元素被<code>drop</code>的顺序。</li>
+</ol>
+
+    </div>
+</article>
+                </main>
+                <aside class="aside">
+                    <section class="aside-section">
+                        
+    <h1>Categories</h1>
+
+    
+
+                    </section>
+                    <section class="aside-section">
+                        
+    <h1>Archives</h1>
+
+    <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/">2019</a></li></ul>
+
+
+                    </section>
+                    <section class="aside-section tag">
+                        
+    <h1>Tags</h1>
+
+    <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/article/">article</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/binary/">binary</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/compiler/">compiler</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/ctf/">ctf</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/cuda/">cuda</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/data-structures/">data_structures</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/environment-setup/">environment setup</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/heap/">heap</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/llvm/">llvm</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/programming-language/">programming language</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/rust/">rust</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/scientific-computing/">scientific computing</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/script/">script</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/shell/">shell</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/test/">test</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/tips/">tips</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/writeup/">writeup</a></li></ul>
+
+                    </section>
+                </aside>
+        </div>
+    </body>
+
+</html>
