@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html>
+<head><meta name="generator" content="Hexo 3.8.0">
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+    <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport">
+    <meta name="keywords" content="hexo, autumn, phosphorus15, cs">
+    <title>
+        Phosphorus&#39; Blog
+    </title>
+    <!-- favicon -->
+    
+    <link rel="icon" href="https://github.githubassets.com/favicon.ico">
+    
+    <link rel="stylesheet" href="/css/style.css">
+
+    <!-- highlight -->
+    <link rel="stylesheet" href="https://cdn.bootcss.com/highlight.js/9.12.0/styles/github-gist.min.css">
+    <script src="//cdn.bootcss.com/highlight.js/9.2.0/highlight.min.js"></script>
+    <script>
+        hljs.initHighlightingOnLoad()
+    </script>
+    <script src="https://cdn.bootcss.com/jquery/3.3.1/jquery.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/frontendsophie/hexo-infinite-scroll@1.0.0/dist/hexo-infinite-scroll.min.css">
+    <script src="https://cdn.jsdelivr.net/gh/frontendsophie/hexo-infinite-scroll@1.0.0/dist/hexo-infinite-scroll.min.js"></script>
+    <script>
+        infiniteScroll()
+
+        // for mobile menu
+        $(function () {
+            $('.social-button').click(function () {
+                if ($('.social-links').hasClass('hide-links')) {
+                    $('.social-links').removeClass('hide-links')
+                } else {
+                    $('.social-links').addClass('hide-links')
+                }
+            })
+        })
+    </script>
+</head>
+
+    <body style="background: url(https://cdn.jsdelivr.net/gh/frontendsophie/hexo-theme-autumn@1.0.0/source/img/button-bg.png) #f3f3f3">
+        <div class="container">
+            <header class="header">
+    <h1 class="title">
+        <a href="/" class="logo">
+            Phosphorus&#39; Blog
+        </a>
+    </h1>
+    <h2 class="desc">
+        Learning, Discovering, Exploiting
+    </h2>
+
+    <nav class="links">
+        <button class="social-button">
+            menu
+        </button>
+        <ul class="social-links hide-links">
+            
+                <li>
+                    <a href="https://github.com/Phosphorus15">
+                        Github
+                    </a>
+                </li>
+                
+                <li>
+                    <a href="https://blog.csdn.net/wxx1237/">
+                        CSDN
+                    </a>
+                </li>
+                
+        </ul>
+    </nav>
+</header>
+                <main class="main">
+                    <article class="post">
+    
+    
+    
+    <h2 class="post-title">
+        TAPL 练习代码 （Haskell 版）
+    </h2>
+    <ul class="post-date">
+        <li>
+            2019-07-17
+        </li>
+        <li>
+            Phosphorus15
+        </li>
+    </ul>
+    <div class="post-content">
+        <p>​    这是一个<del>垃圾</del>堆，以后可能会慢慢附上说明。</p>
+<h3 id="4-1-An-ML-Implementation-of-Arithmetic-Expressions"><a href="#4-1-An-ML-Implementation-of-Arithmetic-Expressions" class="headerlink" title="4.1 - An ML Implementation of Arithmetic Expressions"></a>4.1 - An ML Implementation of Arithmetic Expressions</h3><figure class="highlight haskell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">data</span> <span class="type">Term</span> = <span class="type">TmTrue</span> </span></span><br><span class="line">            | <span class="type">TmFalse</span></span><br><span class="line">			| <span class="type">TmIf</span> <span class="type">Term</span> <span class="type">Term</span> <span class="type">Term</span></span><br><span class="line">			| <span class="type">TmZero</span></span><br><span class="line">			| <span class="type">TmSucc</span> <span class="type">Term</span></span><br><span class="line">			| <span class="type">TmPred</span> <span class="type">Term</span></span><br><span class="line">			| <span class="type">TmIsZero</span> <span class="type">Term</span> <span class="keyword">deriving</span> (<span class="type">Show</span>, <span class="type">Eq</span>)</span><br><span class="line">			</span><br><span class="line"><span class="title">isnumericval</span> :: <span class="type">Term</span> -&gt; <span class="type">Bool</span></span><br><span class="line"></span><br><span class="line"><span class="title">isnumericval</span> <span class="type">TmZero</span> = <span class="type">True</span></span><br><span class="line"><span class="title">isnumericval</span> (<span class="type">TmSucc</span>(t1)) = isnumericval t1</span><br><span class="line"><span class="title">isnumericval</span> _ = <span class="type">False</span></span><br><span class="line"></span><br><span class="line"><span class="title">isval</span> :: <span class="type">Term</span> -&gt; <span class="type">Bool</span></span><br><span class="line"></span><br><span class="line"><span class="title">isval</span> <span class="type">TmTrue</span> = <span class="type">True</span></span><br><span class="line"><span class="title">isval</span> <span class="type">TmFalse</span> = <span class="type">True</span></span><br><span class="line"><span class="title">isval</span> t = isnumericval t</span><br><span class="line"></span><br><span class="line"><span class="title">eval1</span> :: <span class="type">Term</span> -&gt; <span class="type">Term</span></span><br><span class="line"></span><br><span class="line"><span class="title">eval1</span> (<span class="type">TmIf</span> <span class="type">TmTrue</span> t2 t3) = t2</span><br><span class="line"><span class="title">eval1</span> (<span class="type">TmIf</span> <span class="type">TmFalse</span> t2 t3) = t3</span><br><span class="line"><span class="title">eval1</span> (<span class="type">TmIf</span> t1 t2 t3) = <span class="type">TmIf</span> t1' t2 t3</span><br><span class="line">                           <span class="keyword">where</span> t1' = eval1 t1</span><br><span class="line"><span class="title">eval1</span> (<span class="type">TmSucc</span> t1) = <span class="type">TmSucc</span>(t1')</span><br><span class="line">                     <span class="keyword">where</span> t1' = eval1 t1</span><br><span class="line"><span class="title">eval1</span> (<span class="type">TmPred</span> <span class="type">TmZero</span>) = error <span class="string">"No such value"</span></span><br><span class="line"><span class="title">eval1</span> (<span class="type">TmPred</span> (<span class="type">TmSucc</span> t1)) = <span class="keyword">if</span> isnumericval t1 <span class="keyword">then</span> t1 <span class="keyword">else</span> error <span class="string">"No such value"</span></span><br><span class="line"><span class="title">eval1</span> (<span class="type">TmPred</span> t1) = <span class="type">TmPred</span>(t1')</span><br><span class="line">                     <span class="keyword">where</span> t1' = eval1 t1</span><br><span class="line"><span class="title">eval1</span> (<span class="type">TmIsZero</span> <span class="type">TmZero</span>) = <span class="type">TmTrue</span></span><br><span class="line"><span class="title">eval1</span> (<span class="type">TmIsZero</span> (<span class="type">TmSucc</span> t1)) = <span class="type">TmFalse</span></span><br><span class="line"><span class="title">eval1</span> (<span class="type">TmIsZero</span> _) = error <span class="string">"No such value"</span></span><br><span class="line"><span class="title">eval1</span> t = t <span class="comment">-- no rule applies</span></span><br><span class="line"></span><br><span class="line"><span class="title">eval</span> :: <span class="type">Term</span> -&gt; <span class="type">Term</span> <span class="comment">-- multi-stepped evaluation</span></span><br><span class="line"><span class="title">eval</span> t = <span class="keyword">if</span> t' == t <span class="keyword">then</span> t <span class="keyword">else</span> eval t'</span><br><span class="line">		<span class="keyword">where</span> t' = eval1 t</span><br><span class="line"></span><br><span class="line"><span class="title">arith</span> :: <span class="type">Term</span> -&gt; <span class="type">Term</span> <span class="comment">-- expected to be big-stepped</span></span><br><span class="line"><span class="title">arith</span> (<span class="type">TmIf</span> t1 t2 t3) = <span class="keyword">if</span> b1 == <span class="type">TmTrue</span> <span class="keyword">then</span> arith t2 <span class="keyword">else</span> arith t3</span><br><span class="line">						<span class="keyword">where</span> b1 = arith t1</span><br><span class="line"><span class="title">arith</span> (<span class="type">TmSucc</span> t1) = <span class="type">TmSucc</span> $ arith t1</span><br><span class="line"><span class="title">arith</span> (<span class="type">TmPred</span> (<span class="type">TmSucc</span> t1)) = arith t1</span><br><span class="line"><span class="title">arith</span> (<span class="type">TmIsZero</span> t1) = <span class="keyword">if</span> t1' == <span class="type">TmZero</span> <span class="keyword">then</span> <span class="type">TmTrue</span> <span class="keyword">else</span> <span class="type">TmFalse</span></span><br><span class="line">                      <span class="keyword">where</span> t1' = arith t1</span><br><span class="line"><span class="title">arith</span> _ = error <span class="string">"No rule applies"</span></span><br></pre></td></tr></table></figure>
+<h3 id="5-2-Programming-in-the-Lambda-Calculus"><a href="#5-2-Programming-in-the-Lambda-Calculus" class="headerlink" title="5.2 Programming in the Lambda-Calculus"></a>5.2 Programming in the Lambda-Calculus</h3><figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">type</span> <span class="title">Bool</span></span>' a b c = a -&gt; b -&gt; c</span><br><span class="line"></span><br><span class="line">tru :: Bool' a b a</span><br><span class="line">tru = \t -&gt; \f -&gt; t</span><br><span class="line"></span><br><span class="line">fls :: Bool' a b b</span><br><span class="line">fls = \t -&gt; \f -&gt; f</span><br><span class="line"></span><br><span class="line">test :: Bool' a b c -&gt; a -&gt; b -&gt; c</span><br><span class="line">test = \l -&gt; \m -&gt; (\n -&gt; l m n)</span><br><span class="line"></span><br><span class="line">and' = \u -&gt; \v -&gt; (u v fls)</span><br><span class="line"></span><br><span class="line">or' = \u -&gt; \v -&gt; (u tru v)</span><br><span class="line"></span><br><span class="line">not' = flip -- \l -&gt; \t -&gt; \f -&gt; (l f t)</span><br><span class="line"></span><br><span class="line">as_bool :: (Bool' Bool Bool Bool) -&gt; Bool</span><br><span class="line">as_bool = \u -&gt; u True False</span><br></pre></td></tr></table></figure>
+<h4 id="5-2-1-Defining-Logical-Functions"><a href="#5-2-1-Defining-Logical-Functions" class="headerlink" title="5.2.1 Defining Logical Functions"></a>5.2.1 Defining Logical Functions</h4><figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">type</span> <span class="title">Bool</span></span>' a b c = a -&gt; b -&gt; c</span><br><span class="line"></span><br><span class="line">tru :: Bool' a b a</span><br><span class="line">tru = \t -&gt; \f -&gt; t</span><br><span class="line"></span><br><span class="line">fls :: Bool' a b b</span><br><span class="line">fls = \t -&gt; \f -&gt; f</span><br><span class="line"></span><br><span class="line">test :: Bool' a b c -&gt; a -&gt; b -&gt; c</span><br><span class="line">test = \l -&gt; \m -&gt; (\n -&gt; l m n)</span><br><span class="line"></span><br><span class="line">and' = \u -&gt; \v -&gt; (u v fls)</span><br><span class="line"></span><br><span class="line">or' = \u -&gt; \v -&gt; (u tru v)</span><br><span class="line"></span><br><span class="line">not' = flip -- \l -&gt; \t -&gt; \f -&gt; (l f t)</span><br><span class="line"></span><br><span class="line">as_bool :: (Bool' Bool Bool Bool) -&gt; Bool</span><br><span class="line">as_bool = \u -&gt; u True False</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">type</span> <span class="title">Pair</span></span> a b c = a -&gt; b -&gt; (a -&gt; b -&gt; c) -&gt; c</span><br><span class="line"></span><br><span class="line">pair :: Pair a b c</span><br><span class="line">pair = \f -&gt; \s -&gt; \b -&gt; b f s</span><br><span class="line"></span><br><span class="line">fst' = \p -&gt; p tru</span><br><span class="line"></span><br><span class="line">snd' = \p -&gt; p fls</span><br></pre></td></tr></table></figure>
+<h4 id="5-2-2-Numerical-System"><a href="#5-2-2-Numerical-System" class="headerlink" title="5.2.2+ Numerical System"></a>5.2.2+ Numerical System</h4><figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">type</span> <span class="title">LmNat</span></span> a b c = a -&gt; b -&gt; c</span><br><span class="line">c0 = \s -&gt; \z -&gt; z</span><br><span class="line">-- Note that c0 is equivalent to that of `False`</span><br><span class="line">c1 = \s -&gt; \z -&gt; s z</span><br><span class="line">c2 = \s -&gt; \z -&gt; s $ s z</span><br><span class="line"></span><br><span class="line">scc = \n -&gt; \s -&gt; \z -&gt; s (n s z)</span><br><span class="line"></span><br><span class="line">-- Somewhat clumsy definition</span><br><span class="line">scc' = \n -&gt; \s -&gt; \z -&gt; c1 s (n s z)</span><br><span class="line"></span><br><span class="line">plus = \x -&gt; \y -&gt; \s -&gt; \z -&gt; x s (y s z)</span><br><span class="line"></span><br><span class="line">times = \x -&gt; \y -&gt; x (plus y) c0</span><br><span class="line"></span><br><span class="line">pow = \x -&gt; \y -&gt; y (times x) c1</span><br><span class="line"></span><br><span class="line">-- Natural number wrappings</span><br><span class="line">data Nat = Zero | Succ Nat deriving Show</span><br><span class="line"></span><br><span class="line">-- eval natural number</span><br><span class="line">as_num :: LmNat (Nat -&gt; Nat) Nat Nat -&gt; Nat</span><br><span class="line">as_num = \n -&gt; n Succ Zero</span><br><span class="line"></span><br><span class="line">-- Previous logic system</span><br><span class="line">tru = \t -&gt; \f -&gt; t</span><br><span class="line">fls = \t -&gt; \f -&gt; f</span><br><span class="line">as_bool = \u -&gt; u True False</span><br><span class="line"></span><br><span class="line">iszero = \n -&gt; n ss zz</span><br><span class="line">        <span class="keyword">where</span> zz = tru</span><br><span class="line">              ss = \_ -&gt; fls</span><br><span class="line"></span><br><span class="line">-- Previous pair system</span><br><span class="line"><span class="class"><span class="keyword">type</span> <span class="title">Pair</span></span> a b c = a -&gt; b -&gt; (a -&gt; b -&gt; c) -&gt; c</span><br><span class="line">pair :: Pair a b c</span><br><span class="line">pair = \f -&gt; \s -&gt; \b -&gt; b f s</span><br><span class="line">fst' = \p -&gt; p tru</span><br><span class="line">snd' = \p -&gt; p fls</span><br><span class="line"></span><br><span class="line">-- This wouldn<span class="symbol">'t</span> work <span class="keyword">in</span> haskell ~ because this laji could not infer infinite <span class="class"><span class="keyword">type</span></span></span><br><span class="line"><span class="class"><span class="title">prd</span></span> = \x -&gt; fst' (x zz ss)</span><br><span class="line">     <span class="keyword">where</span> zz = pair c0 c0</span><br><span class="line">           ss = \p -&gt; pair (snd' p) (scc $ fst' p)</span><br></pre></td></tr></table></figure>
+
+    </div>
+</article>
+                </main>
+                <aside class="aside">
+                    <section class="aside-section">
+                        
+    <h1>Categories</h1>
+
+    
+
+                    </section>
+                    <section class="aside-section">
+                        
+    <h1>Archives</h1>
+
+    <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/">2019</a></li></ul>
+
+
+                    </section>
+                    <section class="aside-section tag">
+                        
+    <h1>Tags</h1>
+
+    <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/article/">article</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/binary/">binary</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/compiler/">compiler</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/ctf/">ctf</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/cuda/">cuda</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/data-structures/">data_structures</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/environment-setup/">environment setup</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/functional-programming/">functional programming</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/haskell/">haskell</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/heap/">heap</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/llvm/">llvm</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/plt/">plt</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/programming-language/">programming language</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/rust/">rust</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/scientific-computing/">scientific computing</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/script/">script</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/shell/">shell</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/test/">test</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/tips/">tips</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/type-systems/">type systems</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/writeup/">writeup</a></li></ul>
+
+                    </section>
+                </aside>
+        </div>
+    </body>
+
+</html>
