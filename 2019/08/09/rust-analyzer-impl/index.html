@@ -36,6 +36,20 @@
             })
         })
     </script>
+	
+	<script type="text/javascript" async src="https://cdn.bootcss.com/mathjax/2.7.2/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+	
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+		jax: ["input/TeX", "output/HTML-CSS"],
+		tex2jax: {
+			inlineMath: [ ["$", "$"] ],
+			displayMath: [ ["$$", "$$"] ],
+			skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+		},
+		"HTML-CSS": { preferredFont: "TeX", availableFonts: ["STIX","TeX"] }
+      });
+    </script>
 </head>
 
     <body style="background: url(https://cdn.jsdelivr.net/gh/frontendsophie/hexo-theme-autumn@1.0.0/source/img/button-bg.png) #f3f3f3">
@@ -96,7 +110,7 @@
 <p>​    这里把<code>default-features</code>给关闭，是为了不让<code>syn</code>把过程宏一类默认开启的无用功能导入。后面的<code>features</code>属性则是手动指定了导入的功能。等cargo配置完成以后，可以用一段代码来测试一下解析功能</p>
 <figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">fn</span> <span class="title">main</span></span>() &#123;</span><br><span class="line">    <span class="keyword">let</span> f = <span class="string">"&lt;path to file&gt;"</span>;</span><br><span class="line">    <span class="keyword">let</span> <span class="keyword">mut</span> file = File::open(f).unwrap();</span><br><span class="line">    <span class="keyword">let</span> <span class="keyword">mut</span> content = <span class="built_in">String</span>::new();</span><br><span class="line">    file.read_to_string(&amp;<span class="keyword">mut</span> content);</span><br><span class="line">	<span class="comment">// 这前面都是标准的文件IO，把源文件的代码读入</span></span><br><span class="line">    <span class="keyword">let</span> ast = syn::parse_file(&amp;content).unwrap();</span><br><span class="line">    <span class="comment">// 解析文件的抽象语法树</span></span><br><span class="line">    <span class="built_in">println!</span>(<span class="string">"&#123;:?&#125;"</span>, ast); <span class="comment">// 输出抽象语法树</span></span><br><span class="line">    <span class="built_in">println!</span>(<span class="string">"&#123;&#125; items"</span>, ast.items.len());</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <p>​    然后。。讲道理，编译运行就可以看到文件对应的抽象语法树了，但<code>rustc</code>好像不这么想：</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">error[E0277]: `syn::file::File` doesn't implement `std::fmt::Debug`</span><br><span class="line"><span class="meta">  --&gt;</span> src\main.rs:62:22</span><br><span class="line">   |</span><br><span class="line">62 |     println!("&#123;:?&#125;", ast);</span><br><span class="line">   |                      ^^^ `syn::file::File` cannot be formatted using `&#123;:?&#125;` because it doesn't implement `std::fmt::Debug`</span><br><span class="line">   |</span><br><span class="line">   = help: the trait `std::fmt::Debug` is not implemented for `syn::file::File`</span><br><span class="line">   = note: required by `std::fmt::Debug::fmt`</span><br><span class="line"></span><br><span class="line">error: aborting due to previous error</span><br></pre></td></tr></table></figure>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">error[E0277]: `syn::file::File` doesn't implement `std::fmt::Debug`</span><br><span class="line"><span class="meta">  --&gt;</span><span class="bash"> src\main.rs:62:22</span></span><br><span class="line">   |</span><br><span class="line">62 |     println!("&#123;:?&#125;", ast);</span><br><span class="line">   |                      ^^^ `syn::file::File` cannot be formatted using `&#123;:?&#125;` because it doesn't implement `std::fmt::Debug`</span><br><span class="line">   |</span><br><span class="line">   = help: the trait `std::fmt::Debug` is not implemented for `syn::file::File`</span><br><span class="line">   = note: required by `std::fmt::Debug::fmt`</span><br><span class="line"></span><br><span class="line">error: aborting due to previous error</span><br></pre></td></tr></table></figure>
 <p>​    <code>syn::file::File</code>没有实现<code>Debug</code>？不对劲啊。。文档上明明清清楚楚写着：</p>
 <h3 id="impl-Debug" class="impl"><code class="in-band">impl <a class="trait" href="https://doc.rust-lang.org/nightly/core/fmt/trait.Debug.html" title="trait core::fmt::Debug" target="_blank" rel="noopener">Debug</a> for <a class="struct" href="../syn/struct.File.html" title="struct syn::File">File</a></code><a href="#impl-Debug" class="anchor"></a><a class="srclink" href="../src/syn/macros.rs.html#37" title="goto source code">[src]</a><a href="javascript:void(0)" class="collapse-toggle" target="_blank" rel="noopener">[<span class="inner">−</span>]</a></h3>
 
